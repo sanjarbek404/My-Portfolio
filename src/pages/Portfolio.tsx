@@ -458,12 +458,9 @@ const BentoGrid = ({ settings }: { settings: any }) => {
               <h3 className="text-3xl md:text-4xl font-bold text-[#1d1d1f] dark:text-white mb-6 tracking-tight">Sodda. Kreativ. Samarali.</h3>
               <p className="text-[#86868b] dark:text-gray-400 leading-relaxed text-lg md:text-xl font-light">
                 Men — Sanjarbek, zamonaviy web texnologiyalar sohasida rivojlanayotgan developer-man. Asosiy e’tiborim JavaScript, React va Python orqali samarali, kengaytiriladigan va yuqori sifatli dasturiy yechimlar yaratishga qaratilgan.
-
 Frontend rivojlantirishda men React ekotizimi yordamida dinamik va foydalanuvchi uchun qulay interfeyslar yaratishga intilaman. Komponentlarga asoslangan arxitektura va toza kod yozish tamoyillari asosida ishlash — mening asosiy yondashuvimdir.
-
 Shu bilan birga, men Python yordamida avtomatlashtirish va backend logika yo‘nalishlarini o‘rganayapman, bu esa menga yanada kengroq texnik ko‘nikmalarni shakllantirish imkonini bermoqda.
-
-Hozirda men kiberxavfsizlik asoslarini faol ravishda o‘rganayapman. Web ilovalar xavfsizligi, zaifliklarni aniqlash va xavfsiz kod yozish bo‘yicha bilimlarimni bosqichma-bosqich rivojlantirib bormoqdaman..
+Hozirda men kiberxavfsizlik asoslarini faol ravishda o‘rganayapman. Web ilovalar xavfsizligi, zaifliklarni aniqlash va xavfsiz kod yozish bo‘yicha bilimlarimni bosqichma-bosqich rivojlantirib bormoqdaman.
               </p>
             </div>
           </motion.div>

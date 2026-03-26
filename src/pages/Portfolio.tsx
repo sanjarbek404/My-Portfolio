@@ -790,9 +790,9 @@ const ProjectsSection = ({ settings }: { settings: any }) => {
 
 const TestimonialsSection = () => {
   const testimonials = [
-    { id: 1, name: 'Azizbek Rahimov', role: 'CEO, TechStart', text: 'Sanjarbek bilan ishlash juda oson kechdi. U bizning talablarimizni tez tushundi va ajoyib veb-ilova yaratib berdi.', rating: 5 },
-    { id: 2, name: 'Malika Karimova', role: 'Marketing Menejer', text: 'Dizayn va funksionallik uyg\'unligi ajoyib. Saytimizning konversiya darajasi sezilarli darajada oshdi.', rating: 5 },
-    { id: 3, name: 'Sardor Aliyev', role: 'Startup Asoschisi', text: 'O\'z ishining ustasi. Murakkab muammolarga oddiy va samarali yechimlar topa oladi. Tavsiya qilaman!', rating: 5 }
+    { id: 1, name: 'Foydalanuvchi', role: 'CEO, TechStart', text: 'Sanjarbek bilan ishlash juda oson kechdi. U bizning talablarimizni tez tushundi va ajoyib veb-ilova yaratib berdi.', rating: 5 },
+    { id: 2, name: 'Foydalanuvchi', role: 'Marketing Menejer', text: 'Dizayn va funksionallik uyg\'unligi ajoyib. Saytimizning konversiya darajasi sezilarli darajada oshdi.', rating: 5 },
+    { id: 3, name: 'Foydalanuvchi', role: 'Startup Asoschisi', text: 'O\'z ishining ustasi. Murakkab muammolarga oddiy va samarali yechimlar topa oladi. Tavsiya qilaman!', rating: 5 }
   ];
 
   return (

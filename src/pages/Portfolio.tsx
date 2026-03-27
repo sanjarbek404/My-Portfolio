@@ -419,7 +419,7 @@ const Hero = ({ settings }: { settings: any }) => {
   }, []);
 
   const handleCopyEmail = () => {
-    navigator.clipboard.writeText(settings?.email || 'hello@example.com');
+    navigator.clipboard.writeText(settings?.email || 'sanjarbekotabekov010@gmail.com');
     setCopied(true);
     toast.success("Email nusxalandi!");
     setTimeout(() => setCopied(false), 2000);
@@ -536,7 +536,7 @@ const Hero = ({ settings }: { settings: any }) => {
 
             <div className="relative w-full h-full rounded-full overflow-hidden border-4 border-white/20 dark:border-white/10 shadow-2xl">
                 <img 
-                src={heroImage || "https://picsum.photos/seed/sanjarbek/800/800"} 
+                src={heroImage || ""} 
                 alt="Sanjarbek Otabekov" 
                 className="w-full h-full object-cover transition-transform duration-700"
                 referrerPolicy="no-referrer"
@@ -706,7 +706,7 @@ const BentoGrid = ({ settings }: { settings: any }) => {
                   <Zap size={20} />
                 </div>
                 <div>
-                  <p className="text-6xl font-display font-bold tracking-tighter mb-2">3+</p>
+                  <p className="text-6xl font-display font-bold tracking-tighter mb-2">1+</p>
                   <p className="opacity-80 font-medium tracking-widest uppercase text-sm">Yillik tajriba</p>
                 </div>
               </div>
@@ -1245,8 +1245,8 @@ const Contact = ({ settings }: { settings: any }) => {
           </p>
           
           <div className="flex flex-col gap-6">
-            <a href={`mailto:${settings?.email || 'hello@example.com'}`} className="text-2xl md:text-4xl font-light transition-colors w-max">
-              {settings?.email || 'hello@example.com'}
+            <a href={`mailto:${settings?.email || 'sanjarbekotabekov010@gmail.com'}`} className="text-2xl md:text-4xl font-light transition-colors w-max">
+              {settings?.email || 'sanjarbekotabekov010@gmail.com'}
             </a>
             <div className="flex gap-4 mt-4">
               {settings?.github && (

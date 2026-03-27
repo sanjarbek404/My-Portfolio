@@ -19,7 +19,7 @@ export const translations = {
     },
     about: {
       title: "Men haqimda",
-      description: "Men Sanjarbek Otabekov, tajribali Full-Stack dasturchiman. 5 yildan ortiq vaqt davomida murakkab veb-tizimlar va mobil ilovalar ustida ishlayapman. Mening maqsadim - foydalanuvchilar hayotini osonlashtiradigan va bizneslarga o'sishga yordam beradigan raqamli mahsulotlar yaratish.",
+      description: "Men Sanjarbek Otabekov, tajribali Full-Stack dasturchiman. 1 yildan ortiq vaqt davomida murakkab veb-tizimlar va mobil ilovalar ustida ishlayapman. Mening maqsadim - foydalanuvchilar hayotini osonlashtiradigan va bizneslarga o'sishga yordam beradigan raqamli mahsulotlar yaratish.",
       stats: {
         experience: "Yillik tajriba",
         projects: "Tugallangan loyihalar",

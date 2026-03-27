@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, AnimatePresence, useInView, useTransform, useMotionTemplate, useMotionValue } from 'motion/react';
-import { Github, Linkedin, Mail, ArrowRight, Code, Globe, Zap, Layers, Moon, Sun, Award, ExternalLink, Briefcase, MonitorSmartphone, Server, PenTool, GraduationCap, Lock, FileText, Terminal, Coffee, Users, Star, ArrowUpRight, Send, Instagram, Copy, Check, Download, Cpu, Braces } from 'lucide-react';
+import { Github, Linkedin, Mail, ArrowRight, Code, Globe, Zap, Layers, Moon, Sun, Award, ExternalLink, Briefcase, MonitorSmartphone, Server, PenTool, GraduationCap, Lock, FileText, Terminal, Coffee, Users, Star, ArrowUpRight, Send, Instagram, Copy, Check, Download, Cpu, Braces, X, Palette, Database } from 'lucide-react';
 import { db, isFirebaseConfigured } from '../lib/firebase';
 import { collection, onSnapshot, doc, setDoc, increment, addDoc } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
@@ -721,7 +721,7 @@ const BentoCard = ({ children, className, delay = 0, title, fullContent }: { chi
 
       <AnimatePresence>
         {isExpanded && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 perspective-2000">
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -731,15 +731,21 @@ const BentoCard = ({ children, className, delay = 0, title, fullContent }: { chi
             />
             <motion.div 
               layoutId={`card-${title}`}
-              className="relative w-full max-w-2xl bg-white dark:bg-[#111] rounded-[3rem] p-10 shadow-2xl border border-white/10 overflow-hidden"
+              initial={{ rotateY: 90, opacity: 0, scale: 0.8 }}
+              animate={{ rotateY: 0, opacity: 1, scale: 1 }}
+              exit={{ rotateY: -90, opacity: 0, scale: 0.8 }}
+              transition={{ type: "spring", stiffness: 200, damping: 20 }}
+              className="relative w-full max-w-2xl bg-white dark:bg-[#111] rounded-[3rem] p-10 shadow-2xl border border-white/10 overflow-hidden preserve-3d"
             >
               <button 
                 onClick={() => setIsExpanded(false)}
                 className="absolute top-6 right-6 w-10 h-10 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
               >
-                <Lock size={18} className="rotate-45" />
+                <X size={18} className="dark:text-white" />
               </button>
-              {fullContent}
+              <div className="max-h-[70vh] overflow-y-auto custom-scrollbar">
+                {fullContent}
+              </div>
             </motion.div>
           </div>
         )}
@@ -881,6 +887,22 @@ const BentoGrid = ({ settings }: { settings: any }) => {
   );
 };
 
+const getSkillIcon = (name: string) => {
+  const n = name.toLowerCase();
+  if (n.includes('react')) return <Code className="text-blue-400" size={32} />;
+  if (n.includes('node')) return <Terminal className="text-green-500" size={32} />;
+  if (n.includes('typescript') || n.includes('ts')) return <Code className="text-blue-600" size={32} />;
+  if (n.includes('javascript') || n.includes('js')) return <Code className="text-yellow-400" size={32} />;
+  if (n.includes('next')) return <Zap className="text-black dark:text-white" size={32} />;
+  if (n.includes('tailwind')) return <Layers className="text-cyan-400" size={32} />;
+  if (n.includes('firebase')) return <Database className="text-orange-500" size={32} />;
+  if (n.includes('mongo')) return <Database className="text-green-600" size={32} />;
+  if (n.includes('design') || n.includes('ui') || n.includes('ux')) return <Palette className="text-pink-500" size={32} />;
+  if (n.includes('git')) return <Github className="text-gray-600" size={32} />;
+  if (n.includes('python')) return <Terminal className="text-blue-500" size={32} />;
+  return <Cpu className="text-purple-500" size={32} />;
+};
+
 const SkillsAndCerts = () => {
   const [skills, setSkills] = useState<any[]>([]);
   const [certs, setCerts] = useState<any[]>([]);
@@ -919,12 +941,20 @@ const SkillsAndCerts = () => {
             {skills.map((skill) => (
               <StaggerItem key={skill.id}>
                 <motion.div 
-                  whileHover={{ y: -10, scale: 1.05 }}
-                  className="bg-white/80 dark:bg-[#111]/80 backdrop-blur-md p-6 rounded-3xl border border-black/5 dark:border-white/5 shadow-sm flex flex-col items-center justify-center gap-4 aspect-square transition-all duration-300 hover:shadow-xl hover:border-orange-500/20 group"
+                  whileHover={{ 
+                    y: -10, 
+                    scale: 1.05,
+                    rotateY: 10,
+                    rotateX: -5,
+                    z: 50
+                  }}
+                  className="bg-white/80 dark:bg-[#111]/80 backdrop-blur-md p-6 rounded-3xl border border-black/5 dark:border-white/5 shadow-sm flex flex-col items-center justify-center gap-4 aspect-square transition-all duration-300 hover:shadow-2xl hover:border-orange-500/20 group transform-gpu preserve-3d"
                 >
-                  <span className="text-4xl filter drop-shadow-lg group-hover:scale-110 transition-transform">{skill.icon || '⚡'}</span>
-                  <span className="font-bold text-[#1d1d1f] dark:text-white tracking-tight text-center">{skill.name}</span>
-                  <div className="w-full bg-gray-100 dark:bg-white/10 h-1.5 rounded-full overflow-hidden mt-2">
+                  <div className="p-4 rounded-2xl bg-black/5 dark:bg-white/5 group-hover:bg-orange-500/10 transition-colors transform translate-z-10">
+                    {getSkillIcon(skill.name)}
+                  </div>
+                  <span className="font-bold text-[#1d1d1f] dark:text-white tracking-tight text-center transform translate-z-5">{skill.name}</span>
+                  <div className="w-full bg-gray-100 dark:bg-white/10 h-1.5 rounded-full overflow-hidden mt-2 transform translate-z-5">
                     <motion.div 
                       initial={{ width: 0 }}
                       whileInView={{ width: `${skill.level}%` }}
@@ -1139,55 +1169,55 @@ const ProjectsSection = ({ settings }: { settings: any }) => {
             className="flex gap-12 px-12 w-max"
           >
             {displayProjects.map((project, index) => (
-              <div key={`${project.id}-${index}`} className="flex-shrink-0 w-[85vw] md:w-[60vw] lg:w-[40vw] py-12">
+              <div key={`${project.id}-${index}`} className="flex-shrink-0 w-[75vw] md:w-[45vw] lg:w-[30vw] py-12">
                 <motion.div 
                   whileHover={{ 
-                    rotateY: 15,
-                    rotateX: 10,
-                    scale: 1.05,
-                    z: 100,
-                    boxShadow: "0 50px 100px -20px rgba(0,0,0,0.5)"
+                    rotateY: 20,
+                    rotateX: 15,
+                    scale: 1.1,
+                    z: 150,
+                    boxShadow: "0 70px 140px -30px rgba(0,0,0,0.6)"
                   }}
-                  transition={{ type: "spring", stiffness: 200, damping: 20 }}
-                  className="bg-white/40 dark:bg-white/5 backdrop-blur-2xl rounded-[3rem] p-8 md:p-12 border border-white/20 dark:border-white/10 shadow-2xl group h-full flex flex-col transform-gpu preserve-3d relative"
+                  transition={{ type: "spring", stiffness: 150, damping: 15 }}
+                  className="bg-white/40 dark:bg-white/5 backdrop-blur-2xl rounded-[3rem] p-6 md:p-10 border border-white/20 dark:border-white/10 shadow-2xl group h-full flex flex-col transform-gpu preserve-3d relative"
                 >
                   {/* 3D Floating Tag */}
-                  <div className="absolute -top-4 -right-4 bg-[#FF4E00] text-white px-6 py-2 rounded-full font-bold text-xs shadow-xl transform translate-z-20">
+                  <div className="absolute -top-4 -right-4 bg-[#FF4E00] text-white px-6 py-2 rounded-full font-bold text-xs shadow-xl transform translate-z-30">
                     {project.tag}
                   </div>
 
-                  <div className="relative rounded-[2rem] overflow-hidden aspect-video mb-8 shadow-2xl transform translate-z-10">
+                  <div className="relative rounded-[2rem] overflow-hidden aspect-video mb-6 shadow-2xl transform translate-z-20">
                     <motion.img 
-                      whileHover={{ scale: 1.1 }}
+                      whileHover={{ scale: 1.15 }}
                       transition={{ duration: 0.8 }}
                       src={project.image} 
                       alt={project.title} 
                       className="w-full h-full object-cover"
                       referrerPolicy="no-referrer"
                     />
-                    <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500"></div>
+                    <div className="absolute inset-0 bg-black/30 group-hover:bg-transparent transition-colors duration-500"></div>
                   </div>
                   
-                  <div className="flex-1 flex flex-col transform translate-z-5">
-                    <div className="flex items-center gap-4 mb-4">
+                  <div className="flex-1 flex flex-col transform translate-z-10">
+                    <div className="flex items-center gap-4 mb-3">
                       <div className="h-px w-8 bg-[#FF4E00]"></div>
                       <span className="text-xs font-bold tracking-widest uppercase text-[#86868b] dark:text-gray-500">
                         {String((index % projects.length) + 1).padStart(2, '0')}
                       </span>
                     </div>
                     
-                    <h3 className="text-3xl md:text-4xl font-display font-bold text-[#1d1d1f] dark:text-white mb-4 tracking-tight">{project.title}</h3>
-                    <p className="text-lg text-[#86868b] dark:text-gray-400 mb-8 leading-relaxed font-light line-clamp-2">{project.desc}</p>
+                    <h3 className="text-2xl md:text-3xl font-display font-bold text-[#1d1d1f] dark:text-white mb-3 tracking-tight">{project.title}</h3>
+                    <p className="text-base text-[#86868b] dark:text-gray-400 mb-6 leading-relaxed font-light line-clamp-2">{project.desc}</p>
                     
-                    <div className="mt-auto flex flex-wrap items-center gap-4">
+                    <div className="mt-auto flex flex-wrap items-center gap-3">
                       {project.link && (
-                        <a href={project.link} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white bg-[#FF4E00] px-6 py-3 rounded-full transition-all shadow-lg hover:shadow-orange-500/40 hover:-translate-y-1">
-                          {t.projects.viewProject} <ArrowUpRight size={14} />
+                        <a href={project.link} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white bg-[#FF4E00] px-5 py-2.5 rounded-full transition-all shadow-lg hover:shadow-orange-500/40 hover:-translate-y-1">
+                          {t.projects.viewProject} <ArrowUpRight size={12} />
                         </a>
                       )}
                       {project.githubUrl && (
-                        <a href={project.githubUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#1d1d1f] dark:text-white border border-black/10 dark:border-white/20 px-6 py-3 rounded-full transition-all hover:bg-black/5 dark:hover:bg-white/5 hover:-translate-y-1">
-                          <Github size={14} /> {lang === 'UZ' ? "Kod" : lang === 'RU' ? "Код" : "Code"}
+                        <a href={project.githubUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[#1d1d1f] dark:text-white border border-black/10 dark:border-white/20 px-5 py-2.5 rounded-full transition-all hover:bg-black/5 dark:hover:bg-white/5 hover:-translate-y-1">
+                          <Github size={12} /> {lang === 'UZ' ? "Kod" : lang === 'RU' ? "Код" : "Code"}
                         </a>
                       )}
                     </div>
@@ -1467,6 +1497,22 @@ const Footer = ({ settings }: { settings: any }) => {
 };
 
 
+const SectionWrapper = ({ children, className = "" }: { children: React.ReactNode, className?: string }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 50, rotateX: 10, scale: 0.95 }}
+      whileInView={{ opacity: 1, y: 0, rotateX: 0, scale: 1 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      className={`perspective-2000 ${className}`}
+    >
+      <div className="preserve-3d">
+        {children}
+      </div>
+    </motion.div>
+  );
+};
+
 export default function Portfolio() {
   const [isDark, setIsDark] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -1552,14 +1598,30 @@ export default function Portfolio() {
           <main className="relative z-10">
             <Hero settings={settings} />
             <Marquee />
-            <BentoGrid settings={settings} />
-            <ServicesSection />
-            <SkillsAndCerts />
-            <ProjectsSection settings={settings} />
-            <WorkflowSection />
-            <TestimonialsSection />
-            <ExperienceEducation />
-            <Contact settings={settings} />
+            <SectionWrapper>
+              <BentoGrid settings={settings} />
+            </SectionWrapper>
+            <SectionWrapper>
+              <ServicesSection />
+            </SectionWrapper>
+            <SectionWrapper>
+              <SkillsAndCerts />
+            </SectionWrapper>
+            <SectionWrapper>
+              <ProjectsSection settings={settings} />
+            </SectionWrapper>
+            <SectionWrapper>
+              <WorkflowSection />
+            </SectionWrapper>
+            <SectionWrapper>
+              <TestimonialsSection />
+            </SectionWrapper>
+            <SectionWrapper>
+              <ExperienceEducation />
+            </SectionWrapper>
+            <SectionWrapper>
+              <Contact settings={settings} />
+            </SectionWrapper>
           </main>
           <Footer settings={settings} />
         </motion.div>

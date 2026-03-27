@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, useScroll, AnimatePresence, useInView, useTransform } from 'motion/react';
+import { motion, useScroll, AnimatePresence, useInView, useTransform, useMotionTemplate, useMotionValue } from 'motion/react';
 import { Github, Linkedin, Mail, ArrowRight, Code, Globe, Zap, Layers, Moon, Sun, Award, ExternalLink, Briefcase, MonitorSmartphone, Server, PenTool, GraduationCap, Lock, FileText, Terminal, Coffee, Users, Star, ArrowUpRight, Send, Instagram, Copy, Check, Download, Cpu, Braces } from 'lucide-react';
 import { db, isFirebaseConfigured } from '../lib/firebase';
 import { collection, onSnapshot, doc, setDoc, increment, addDoc } from 'firebase/firestore';
@@ -249,9 +249,26 @@ const BackgroundAnimation = () => {
   );
 };
 
+const ThemeTransition = ({ isDark, trigger }: { isDark: boolean, trigger: boolean }) => {
+  return (
+    <AnimatePresence mode="wait">
+      {trigger && (
+        <motion.div
+          initial={{ clipPath: 'circle(0% at 50% 50%)' }}
+          animate={{ clipPath: 'circle(150% at 50% 50%)' }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className={`fixed inset-0 z-[100] pointer-events-none ${isDark ? 'bg-[#0a0a0a]' : 'bg-white'}`}
+        />
+      )}
+    </AnimatePresence>
+  );
+};
+
 const FloatingNav = ({ isDark, toggleDark }: { isDark: boolean, toggleDark: () => void }) => {
   const [scrolled, setScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [themeTrigger, setThemeTrigger] = useState(false);
   const { lang, setLang, t } = useLanguage();
 
   useEffect(() => {
@@ -260,10 +277,19 @@ const FloatingNav = ({ isDark, toggleDark }: { isDark: boolean, toggleDark: () =
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const handleThemeToggle = () => {
+    setThemeTrigger(true);
+    setTimeout(() => {
+      toggleDark();
+      setTimeout(() => setThemeTrigger(false), 800);
+    }, 50);
+  };
+
   const languages: ('UZ' | 'RU' | 'EN')[] = ['UZ', 'RU', 'EN'];
 
   return (
     <>
+      <ThemeTransition isDark={isDark} trigger={themeTrigger} />
       <div className="fixed inset-0 z-[-1] transition-colors duration-500">
         <div className="absolute inset-0 bg-dot-pattern [mask-image:radial-gradient(ellipse_at_center,black,transparent_80%)]"></div>
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-[#FF4E00]/10 blur-[120px] pointer-events-none"></div>
@@ -316,7 +342,7 @@ const FloatingNav = ({ isDark, toggleDark }: { isDark: boolean, toggleDark: () =
               </div>
             </div>
 
-              <button onClick={toggleDark} className="p-2.5 rounded-full text-[#1d1d1f] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+              <button onClick={handleThemeToggle} className="p-2.5 rounded-full text-[#1d1d1f] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
                 {isDark ? <Sun size={18} /> : <Moon size={18} />}
               </button>
             
@@ -419,7 +445,7 @@ const Hero = ({ settings }: { settings: any }) => {
   }, []);
 
   const handleCopyEmail = () => {
-    navigator.clipboard.writeText(settings?.email || 'sanjarbekotabekov010@gmail.com');
+    navigator.clipboard.writeText(settings?.email || 'hello@example.com');
     setCopied(true);
     toast.success("Email nusxalandi!");
     setTimeout(() => setCopied(false), 2000);
@@ -632,6 +658,41 @@ const ScrollToTop = () => {
   );
 };
 
+const BentoCard = ({ children, className, delay = 0 }: { children: React.ReactNode, className?: string, delay?: number }) => {
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  function handleMouseMove({ currentTarget, clientX, clientY }: React.MouseEvent) {
+    const { left, top } = currentTarget.getBoundingClientRect();
+    mouseX.set(clientX - left);
+    mouseY.set(clientY - top);
+  }
+
+  return (
+    <StaggerItem className={className}>
+      <motion.div 
+        onMouseMove={handleMouseMove}
+        whileHover={{ y: -5, scale: 1.01 }}
+        className="h-full bg-white/40 dark:bg-white/5 backdrop-blur-2xl rounded-[2.5rem] p-8 flex flex-col justify-between group transition-all duration-500 border border-white/20 dark:border-white/10 relative overflow-hidden shadow-[0_8px_32px_0_rgba(0,0,0,0.05)] hover:shadow-[0_8px_32px_0_rgba(59,130,246,0.15)] hover:border-blue-500/30"
+      >
+        <motion.div
+          className="pointer-events-none absolute -inset-px rounded-[2.5rem] opacity-0 transition duration-300 group-hover:opacity-100"
+          style={{
+            background: useMotionTemplate`
+              radial-gradient(
+                650px circle at ${mouseX}px ${mouseY}px,
+                rgba(59, 130, 246, 0.1),
+                transparent 80%
+              )
+            `,
+          }}
+        />
+        {children}
+      </motion.div>
+    </StaggerItem>
+  );
+};
+
 const BentoGrid = ({ settings }: { settings: any }) => {
   const [time, setTime] = useState(new Date());
 
@@ -652,11 +713,7 @@ const BentoGrid = ({ settings }: { settings: any }) => {
         </div>
 
         <StaggerContainer className="grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-[280px]">
-          <StaggerItem className="md:col-span-2 md:row-span-2">
-            <motion.div 
-              whileHover={{ y: -5, scale: 1.01 }}
-              className="h-full bg-white/40 dark:bg-white/5 backdrop-blur-2xl rounded-[2.5rem] p-10 flex flex-col justify-between group transition-all duration-500 border border-white/20 dark:border-white/10 relative overflow-hidden shadow-[0_8px_32px_0_rgba(0,0,0,0.05)] hover:shadow-[0_8px_32px_0_rgba(59,130,246,0.15)] hover:border-blue-500/30"
-            >
+          <BentoCard className="md:col-span-2 md:row-span-2">
                <div className="absolute top-0 right-0 p-10 opacity-5 transition-transform duration-500 text-[#1d1d1f] dark:text-white group-hover:scale-110 group-hover:rotate-3">
                 <Layers size={200} />
               </div>
@@ -667,14 +724,9 @@ const BentoGrid = ({ settings }: { settings: any }) => {
                   Dasturlash men uchun shunchaki kod yozish emas, balki insonlar hayotini yengillashtiruvchi vositalar yaratishdir. Har bir loyihada minimalizm va yuqori unumdorlikni birinchi o'ringa qo'yaman.
                 </p>
               </div>
-            </motion.div>
-          </StaggerItem>
+          </BentoCard>
 
-          <StaggerItem className="md:col-span-1 md:row-span-1">
-            <motion.div 
-              whileHover={{ y: -5, scale: 1.02 }}
-              className="h-full bg-white/40 dark:bg-white/5 backdrop-blur-2xl rounded-[2.5rem] p-8 relative overflow-hidden border border-white/20 dark:border-white/10 transition-all duration-500 shadow-[0_8px_32px_0_rgba(0,0,0,0.05)] hover:shadow-[0_8px_32px_0_rgba(59,130,246,0.15)] hover:border-blue-500/30 group"
-            >
+          <BentoCard className="md:col-span-1 md:row-span-1">
               <div className="absolute top-0 right-0 p-6 opacity-5 transition-transform duration-500 text-[#1d1d1f] dark:text-white group-hover:scale-110 group-hover:-rotate-12">
                 <Globe size={120} />
               </div>
@@ -690,8 +742,7 @@ const BentoGrid = ({ settings }: { settings: any }) => {
                   </p>
                 </div>
               </div>
-            </motion.div>
-          </StaggerItem>
+          </BentoCard>
 
           <StaggerItem className="md:col-span-1 md:row-span-1">
             <motion.div 
@@ -706,18 +757,14 @@ const BentoGrid = ({ settings }: { settings: any }) => {
                   <Zap size={20} />
                 </div>
                 <div>
-                  <p className="text-6xl font-display font-bold tracking-tighter mb-2">1+</p>
+                  <p className="text-6xl font-display font-bold tracking-tighter mb-2">3+</p>
                   <p className="opacity-80 font-medium tracking-widest uppercase text-sm">Yillik tajriba</p>
                 </div>
               </div>
             </motion.div>
           </StaggerItem>
 
-          <StaggerItem className="md:col-span-1 md:row-span-1">
-            <motion.div 
-              whileHover={{ y: -5, scale: 1.02 }}
-              className="h-full bg-white/40 dark:bg-white/5 backdrop-blur-2xl rounded-[2.5rem] p-8 flex flex-col justify-between border border-white/20 dark:border-white/10 transition-all duration-500 shadow-[0_8px_32px_0_rgba(0,0,0,0.05)] hover:shadow-[0_8px_32px_0_rgba(59,130,246,0.15)] group"
-            >
+          <BentoCard className="md:col-span-1 md:row-span-1">
                <div className="w-12 h-12 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center text-[#1d1d1f] dark:text-white mb-4 group-hover:bg-black/5 dark:group-hover:bg-white/5 transition-colors">
                   <FileText size={20} />
                 </div>
@@ -731,14 +778,9 @@ const BentoGrid = ({ settings }: { settings: any }) => {
                     <span className="text-sm text-gray-400">Tez orada...</span>
                   )}
                 </div>
-            </motion.div>
-          </StaggerItem>
+          </BentoCard>
 
-          <StaggerItem className="md:col-span-1 md:row-span-1">
-            <motion.div 
-              whileHover={{ y: -5, scale: 1.02 }}
-              className="h-full bg-white/40 dark:bg-white/5 backdrop-blur-2xl rounded-[2.5rem] p-8 flex flex-col justify-between border border-white/20 dark:border-white/10 transition-all duration-500 shadow-[0_8px_32px_0_rgba(0,0,0,0.05)] hover:shadow-[0_8px_32px_0_rgba(59,130,246,0.15)] group"
-            >
+          <BentoCard className="md:col-span-1 md:row-span-1">
               <div className="w-12 h-12 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center text-[#1d1d1f] dark:text-white mb-4 group-hover:bg-black/5 dark:group-hover:bg-white/5 transition-colors">
                 <Terminal size={20} />
               </div>
@@ -746,8 +788,7 @@ const BentoGrid = ({ settings }: { settings: any }) => {
                 <h3 className="text-xl font-bold text-[#1d1d1f] dark:text-white mb-2 tracking-tight">Stack</h3>
                 <p className="text-sm text-[#86868b] dark:text-gray-400">React, Node.js, TypeScript, Tailwind</p>
               </div>
-            </motion.div>
-          </StaggerItem>
+          </BentoCard>
         </StaggerContainer>
       </div>
     </section>
@@ -955,6 +996,12 @@ const ProjectsSection = ({ settings }: { settings: any }) => {
   const { t, lang } = useLanguage();
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const targetRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: targetRef,
+  });
+
+  const x = useTransform(scrollYProgress, [0, 1], ["0%", "-75%"]);
 
   useEffect(() => {
     if (isFirebaseConfigured && db) {
@@ -970,108 +1017,78 @@ const ProjectsSection = ({ settings }: { settings: any }) => {
   }, []);
 
   return (
-    <section id="projects" className="py-32 px-6 md:px-12">
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-20 flex flex-col md:flex-row md:items-end justify-between gap-8">
-          <div>
-            <TextReveal>
-              <h2 className="text-5xl md:text-7xl font-display font-bold tracking-tighter text-[#1d1d1f] dark:text-white uppercase mb-4">
-                <Typewriter text={t.projects.title} />
-              </h2>
-            </TextReveal>
-            <p className="text-xl text-[#86868b] dark:text-gray-400 max-w-2xl font-light">{t.projects.subtitle}</p>
+    <section id="projects" ref={targetRef} className="relative h-[400vh]">
+      <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden">
+        <div className="max-w-7xl mx-auto w-full px-6 md:px-12 mb-12">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+            <div>
+              <TextReveal>
+                <h2 className="text-5xl md:text-7xl font-display font-bold tracking-tighter text-[#1d1d1f] dark:text-white uppercase mb-4">
+                  <Typewriter text={t.projects.title} />
+                </h2>
+              </TextReveal>
+              <p className="text-xl text-[#86868b] dark:text-gray-400 max-w-2xl font-light">{t.projects.subtitle}</p>
+            </div>
+            <a href={settings?.github || "https://github.com"} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-[#1d1d1f] dark:text-white transition-opacity">
+              {lang === 'UZ' ? "Barcha loyihalar" : lang === 'RU' ? "Все проекты" : "All projects"} <ArrowUpRight size={18} />
+            </a>
           </div>
-          <a href={settings?.github || "https://github.com"} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-[#1d1d1f] dark:text-white transition-opacity">
-            {lang === 'UZ' ? "Barcha loyihalar" : lang === 'RU' ? "Все проекты" : "All projects"} <ArrowUpRight size={18} />
-          </a>
         </div>
-        
+
         {loading ? (
           <div className="text-center text-gray-500 py-20">{lang === 'UZ' ? "Yuklanmoqda..." : lang === 'RU' ? "Загрузка..." : "Loading..."}</div>
         ) : projects.length === 0 ? (
-          <div className="text-center text-gray-500 py-20 border border-dashed border-gray-300 dark:border-gray-800 rounded-3xl">
+          <div className="text-center text-gray-500 py-20 border border-dashed border-gray-300 dark:border-gray-800 rounded-3xl mx-12">
             {t.projects.noProjects}
           </div>
         ) : (
-          <div className="space-y-32">
+          <motion.div style={{ x }} className="flex gap-12 px-12">
             {projects.map((project, index) => (
-              <motion.div 
-                key={project.id}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8 }}
-              >
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center">
-                  <div className={`lg:col-span-7 ${index % 2 !== 0 ? 'lg:order-2' : ''}`}>
-                    <motion.div 
-                      whileHover={{ scale: 1.02 }}
-                      transition={{ duration: 0.5 }}
-                      className="relative rounded-[2rem] overflow-hidden bg-white/80 dark:bg-[#111]/80 backdrop-blur-md aspect-[4/3] group cursor-pointer shadow-2xl"
-                    >
-                      <motion.img 
-                        whileHover={{ scale: 1.1 }}
-                        transition={{ duration: 0.8 }}
-                        src={project.image} 
-                        alt={project.title} 
-                        className="absolute inset-0 w-full h-full object-cover object-center"
-                        referrerPolicy="no-referrer"
-                      />
-                      <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500"></div>
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                        <div className="bg-white/20 backdrop-blur-md p-4 rounded-full border border-white/30">
-                          <ExternalLink className="text-white" size={32} />
-                        </div>
-                      </div>
-                    </motion.div>
+              <div key={project.id} className="flex-shrink-0 w-[85vw] md:w-[60vw] lg:w-[45vw]">
+                <div className="bg-white/40 dark:bg-white/5 backdrop-blur-2xl rounded-[3rem] p-8 md:p-12 border border-white/20 dark:border-white/10 shadow-2xl group h-full flex flex-col">
+                  <div className="relative rounded-[2rem] overflow-hidden aspect-video mb-8">
+                    <motion.img 
+                      whileHover={{ scale: 1.05 }}
+                      transition={{ duration: 0.8 }}
+                      src={project.image} 
+                      alt={project.title} 
+                      className="w-full h-full object-cover"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500"></div>
                   </div>
                   
-                  <div className={`lg:col-span-5 flex flex-col justify-center ${index % 2 !== 0 ? 'lg:order-1' : ''}`}>
-                    <StaggerContainer>
-                      <StaggerItem>
-                        <div className="flex items-center gap-4 mb-6">
-                          <span className="text-xs font-bold tracking-widest uppercase text-[#86868b] dark:text-gray-500">
-                            {String(index + 1).padStart(2, '0')}
-                          </span>
-                          <div className="h-px w-12 bg-black/20 dark:bg-white/20"></div>
-                          <span className="text-xs font-bold tracking-widest uppercase text-[#FF4E00]">
-                            {project.tag}
-                          </span>
-                        </div>
-                      </StaggerItem>
-                      
-                      <StaggerItem>
-                        <h3 className="text-4xl md:text-5xl font-display font-bold text-[#1d1d1f] dark:text-white mb-6 tracking-tight">{project.title}</h3>
-                      </StaggerItem>
-                      
-                      <StaggerItem>
-                        <p className="text-lg text-[#86868b] dark:text-gray-400 mb-10 leading-relaxed font-light">{project.desc}</p>
-                      </StaggerItem>
-                      
-                      <StaggerItem>
-                        <div className="flex flex-wrap items-center gap-6">
-                          {project.link && (
-                            <Magnetic>
-                              <a href={project.link} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-white bg-[#FF4E00] px-8 py-4 rounded-full transition-all shadow-lg hover:shadow-orange-500/40 hover:-translate-y-1">
-                                {t.projects.viewProject} <ArrowUpRight size={16} />
-                              </a>
-                            </Magnetic>
-                          )}
-                          {project.githubUrl && (
-                            <Magnetic>
-                              <a href={project.githubUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-[#1d1d1f] dark:text-white border border-black/10 dark:border-white/20 px-8 py-4 rounded-full transition-all hover:bg-black/5 dark:hover:bg-white/5">
-                                <Github size={16} /> {lang === 'UZ' ? "Kod" : lang === 'RU' ? "Код" : "Code"}
-                              </a>
-                            </Magnetic>
-                          )}
-                        </div>
-                      </StaggerItem>
-                    </StaggerContainer>
+                  <div className="flex-1 flex flex-col">
+                    <div className="flex items-center gap-4 mb-4">
+                      <span className="text-xs font-bold tracking-widest uppercase text-[#FF4E00]">
+                        {project.tag}
+                      </span>
+                      <div className="h-px w-8 bg-black/20 dark:bg-white/20"></div>
+                      <span className="text-xs font-bold tracking-widest uppercase text-[#86868b] dark:text-gray-500">
+                        {String(index + 1).padStart(2, '0')}
+                      </span>
+                    </div>
+                    
+                    <h3 className="text-3xl md:text-4xl font-display font-bold text-[#1d1d1f] dark:text-white mb-4 tracking-tight">{project.title}</h3>
+                    <p className="text-lg text-[#86868b] dark:text-gray-400 mb-8 leading-relaxed font-light line-clamp-3">{project.desc}</p>
+                    
+                    <div className="mt-auto flex flex-wrap items-center gap-4">
+                      {project.link && (
+                        <a href={project.link} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white bg-[#FF4E00] px-6 py-3 rounded-full transition-all shadow-lg hover:shadow-orange-500/40">
+                          {t.projects.viewProject} <ArrowUpRight size={14} />
+                        </a>
+                      )}
+                      {project.githubUrl && (
+                        <a href={project.githubUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#1d1d1f] dark:text-white border border-black/10 dark:border-white/20 px-6 py-3 rounded-full transition-all hover:bg-black/5 dark:hover:bg-white/5">
+                          <Github size={14} /> {lang === 'UZ' ? "Kod" : lang === 'RU' ? "Код" : "Code"}
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
-          </div>
+          </motion.div>
         )}
       </div>
     </section>
@@ -1245,8 +1262,8 @@ const Contact = ({ settings }: { settings: any }) => {
           </p>
           
           <div className="flex flex-col gap-6">
-            <a href={`mailto:${settings?.email || 'sanjarbekotabekov010@gmail.com'}`} className="text-2xl md:text-4xl font-light transition-colors w-max">
-              {settings?.email || 'sanjarbekotabekov010@gmail.com'}
+            <a href={`mailto:${settings?.email || 'hello@example.com'}`} className="text-2xl md:text-4xl font-light transition-colors w-max">
+              {settings?.email || 'hello@example.com'}
             </a>
             <div className="flex gap-4 mt-4">
               {settings?.github && (

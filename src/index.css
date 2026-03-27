@@ -17,25 +17,22 @@ body {
 
 
 
-/* Custom Scrollbar */
+/* Modern Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 6px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 5px;
-}
-.dark ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: linear-gradient(to bottom, #FF4E00, #3b82f6);
+  border-radius: 100px;
+  border: 2px solid transparent;
+  background-clip: content-box;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: linear-gradient(to bottom, #FF4E00, #3b82f6);
+  background-clip: border-box;
 }
 
 

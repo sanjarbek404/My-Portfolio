@@ -12,14 +12,14 @@ export const translations = {
     hero: {
       greeting: "Salom, men",
       role: "Full-Stack Dasturchi & UI/UX Dizayner",
-      description: "Men zamonaviy, yuqori unumdorlikka ega va foydalanuvchiga yo'naltirilgan veb-ilovalarni yarataman. Har bir loyihaga ijodiy           yondashuv va texnik  mukammallikni    olib kiraman.",
+      description: "Men zamonaviy, yuqori unumdorlikka ega va foydalanuvchiga yo'naltirilgan veb-ilovalarni yarataman. Har bir loyihaga ijodiy yondashuv va texnik mukammallikni olib kiraman.",
       projectsBtn: "Loyihalarni ko'rish",
       cvBtn: "CV yuklab olish",
       copyEmail: "Email nusxalandi!"
     },
     about: {
       title: "Men haqimda",
-      description: "Men Sanjarbek Otabekov, tajribali Full-Stack dasturchiman. 1 yildan ortiq vaqt davomida murakkab veb-tizimlar va mobil ilovalar ustida ishlayapman. Mening maqsadim - foydalanuvchilar hayotini osonlashtiradigan va bizneslarga o'sishga yordam beradigan raqamli mahsulotlar yaratish.",
+      description: "Men Sanjarbek Otabekov, tajribali Full-Stack dasturchiman. 5 yildan ortiq vaqt davomida murakkab veb-tizimlar va mobil ilovalar ustida ishlayapman. Mening maqsadim - foydalanuvchilar hayotini osonlashtiradigan va bizneslarga o'sishga yordam beradigan raqamli mahsulotlar yaratish.",
       stats: {
         experience: "Yillik tajriba",
         projects: "Tugallangan loyihalar",

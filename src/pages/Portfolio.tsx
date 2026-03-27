@@ -517,7 +517,7 @@ const Hero = ({ settings }: { settings: any }) => {
           >
             <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/30 to-purple-500/30 rounded-full blur-[60px] animate-pulse"></div>
             
-            {/* Floating Programming & Social Icons */}
+            {/* Floating Programming Icons */}
             <motion.div 
               animate={{ y: [0, -20, 0], rotate: [0, 15, 0] }}
               transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
@@ -533,42 +533,6 @@ const Hero = ({ settings }: { settings: any }) => {
             >
               <Terminal className="text-[#FF4E00] drop-shadow-[0_0_8px_rgba(255,78,0,0.5)]" size={32} />
             </motion.div>
-
-            {settings?.github && (
-              <motion.div 
-                animate={{ x: [0, -15, 0], y: [0, 15, 0] }}
-                transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                className="absolute bottom-1/4 -left-10 z-20 bg-white/20 dark:bg-white/10 backdrop-blur-2xl p-3 rounded-2xl border border-white/30 shadow-2xl"
-              >
-                <a href={settings.github} target="_blank" rel="noreferrer">
-                  <Github className="text-gray-800 dark:text-white" size={24} />
-                </a>
-              </motion.div>
-            )}
-
-            {settings?.linkedin && (
-              <motion.div 
-                animate={{ x: [0, 15, 0], y: [0, -15, 0] }}
-                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-                className="absolute top-1/4 -right-10 z-20 bg-white/20 dark:bg-white/10 backdrop-blur-2xl p-3 rounded-2xl border border-white/30 shadow-2xl"
-              >
-                <a href={settings.linkedin} target="_blank" rel="noreferrer">
-                  <Linkedin className="text-blue-600" size={24} />
-                </a>
-              </motion.div>
-            )}
-
-            {settings?.telegram && (
-              <motion.div 
-                animate={{ scale: [1, 1.1, 1] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-                className="absolute -top-10 right-1/4 z-20 bg-white/20 dark:bg-white/10 backdrop-blur-2xl p-3 rounded-2xl border border-white/30 shadow-2xl"
-              >
-                <a href={settings.telegram} target="_blank" rel="noreferrer">
-                  <Send className="text-blue-400" size={24} />
-                </a>
-              </motion.div>
-            )}
 
             <div className="relative w-full h-full rounded-full overflow-hidden border-4 border-white/20 dark:border-white/10 shadow-2xl">
                 <img 

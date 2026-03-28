@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, AnimatePresence, useInView, useTransform, useMotionTemplate, useMotionValue } from 'motion/react';
-import { Github, Linkedin, Mail, ArrowRight, Code, Globe, Zap, Layers, Moon, Sun, Award, ExternalLink, Briefcase, MonitorSmartphone, Server, PenTool, GraduationCap, Lock, FileText, Terminal, Coffee, Users, Star, ArrowUpRight, Send, Instagram, Copy, Check, Download, Cpu, Braces, X, Palette, Database } from 'lucide-react';
+import { Github, Linkedin, Mail, ArrowRight, Code, Globe, Zap, Layers, Moon, Sun, Award, ExternalLink, Briefcase, MonitorSmartphone, Server, PenTool, GraduationCap, Lock, FileText, Terminal, Coffee, Users, Star, ArrowUpRight, Send, Instagram, Copy, Check, Download, Cpu, Braces, X, Palette, Database, Music, Heart, ThumbsUp, Flame, Rocket } from 'lucide-react';
 import { db, isFirebaseConfigured } from '../lib/firebase';
 import { collection, onSnapshot, doc, setDoc, increment, addDoc } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
@@ -150,11 +150,98 @@ const StaggerItem = ({ children, className = "" }: { children: React.ReactNode, 
 
 
 
+const ReactionsWidget = () => {
+  const [reactions, setReactions] = useState({ like: 0, heart: 0, fire: 0, rocket: 0 });
+  const [hasReacted, setHasReacted] = useState(false);
+
+  useEffect(() => {
+    if (!isFirebaseConfigured || !db) return;
+    const unsub = onSnapshot(doc(db, 'stats', 'reactions'), (docSnap) => {
+      if (docSnap.exists()) {
+        setReactions(docSnap.data() as any);
+      }
+    });
+    return () => unsub();
+  }, []);
+
+  const handleReact = async (type: string) => {
+    if (hasReacted || !isFirebaseConfigured || !db) return;
+    setHasReacted(true);
+    toast.success("Reaksiya uchun rahmat!");
+    try {
+      await setDoc(doc(db, 'stats', 'reactions'), {
+        [type]: increment(1)
+      }, { merge: true });
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 50, scale: 0.8 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ delay: 2, type: "spring" }}
+      className="fixed bottom-8 left-8 z-50 flex flex-col gap-2 bg-white/40 dark:bg-[#111]/40 backdrop-blur-2xl p-2 rounded-full border border-black/10 dark:border-white/10 shadow-2xl"
+    >
+      {[
+        { type: 'like', icon: <ThumbsUp size={18} />, count: reactions.like, color: "text-blue-500" },
+        { type: 'heart', icon: <Heart size={18} />, count: reactions.heart, color: "text-red-500" },
+        { type: 'fire', icon: <Flame size={18} />, count: reactions.fire, color: "text-cyan-500" },
+        { type: 'rocket', icon: <Rocket size={18} />, count: reactions.rocket, color: "text-purple-500" },
+      ].map((r) => (
+        <button
+          key={r.type}
+          onClick={() => handleReact(r.type)}
+          disabled={hasReacted}
+          className={`relative group flex items-center justify-center w-10 h-10 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${r.color}`}
+        >
+          <span className="group-hover:scale-125 transition-transform">{r.icon}</span>
+          <span className="absolute left-full ml-3 px-2 py-1 bg-[#1d1d1f] dark:bg-white text-white dark:text-[#1d1d1f] font-bold text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity shadow-lg whitespace-nowrap">
+            {r.count || 0}
+          </span>
+        </button>
+      ))}
+    </motion.div>
+  );
+};
+
+const WordReveal = ({ text, className = "" }: { text: string, className?: string }) => {
+  const words = text.split(" ");
+  
+  return (
+    <motion.div 
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, margin: "-50px" }}
+      variants={{
+        show: {
+          transition: { staggerChildren: 0.03 }
+        }
+      }}
+      className={`flex flex-wrap gap-x-1.5 ${className}`}
+    >
+      {words.map((word, i) => (
+        <motion.span
+          key={i}
+          variants={{
+            hidden: { opacity: 0, y: 15, filter: "blur(8px)" },
+            show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
+          }}
+          className="inline-block"
+        >
+          {word}
+        </motion.span>
+      ))}
+    </motion.div>
+  );
+};
+
 const ScrollProgress = () => {
   const { scrollYProgress } = useScroll();
   return (
     <motion.div 
-      className="fixed top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-500 via-[#FF4E00] to-purple-500 origin-left z-[100] shadow-[0_0_10px_rgba(59,130,246,0.5)]"
+      className="fixed top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-500 via-[#3B82F6] to-purple-500 origin-left z-[100] shadow-[0_0_10px_rgba(59,130,246,0.5)]"
       style={{ scaleX: scrollYProgress }}
     />
   );
@@ -234,7 +321,7 @@ const BackgroundAnimation = () => {
           rotate: [0, -45, 0],
         }}
         transition={{ duration: 35, repeat: Infinity, ease: "linear" }}
-        className="absolute bottom-[-20%] right-[-20%] w-[70%] h-[70%] rounded-full bg-[#FF4E00]/10 blur-[150px] dark:bg-[#FF4E00]/5"
+        className="absolute bottom-[-20%] right-[-20%] w-[70%] h-[70%] rounded-full bg-[#3B82F6]/10 blur-[150px] dark:bg-[#3B82F6]/5"
       />
       <motion.div 
         animate={{ 
@@ -292,7 +379,7 @@ const FloatingNav = ({ isDark, toggleDark }: { isDark: boolean, toggleDark: () =
       <ThemeTransition isDark={isDark} trigger={themeTrigger} />
       <div className="fixed inset-0 z-[-1] transition-colors duration-500">
         <div className="absolute inset-0 bg-dot-pattern [mask-image:radial-gradient(ellipse_at_center,black,transparent_80%)]"></div>
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-[#FF4E00]/10 blur-[120px] pointer-events-none"></div>
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-[#3B82F6]/10 blur-[120px] pointer-events-none"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-500/10 blur-[120px] pointer-events-none"></div>
       </div>
       <motion.nav 
@@ -382,13 +469,13 @@ const FloatingNav = ({ isDark, toggleDark }: { isDark: boolean, toggleDark: () =
             className="fixed inset-0 z-40 bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-xl pt-32 px-6 md:hidden"
           >
             <div className="flex flex-col gap-8 text-center">
-              <a href="#about" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-bold text-[#1d1d1f] dark:text-white">Men</a>
-              <a href="#skills" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-bold text-[#1d1d1f] dark:text-white">Ko'nikmalar</a>
-              <a href="#projects" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-bold text-[#1d1d1f] dark:text-white">Loyihalar</a>
-              <a href="#experience" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-bold text-[#1d1d1f] dark:text-white">Tajriba</a>
-              <Link to="/cv-builder" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-bold text-[#1d1d1f] dark:text-white flex items-center justify-center gap-2"><FileText size={24}/> CV Builder</Link>
+              <a href="#about" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-bold text-[#1d1d1f] dark:text-white">{t.nav.about}</a>
+              <a href="#skills" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-bold text-[#1d1d1f] dark:text-white">{t.nav.skills}</a>
+              <a href="#projects" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-bold text-[#1d1d1f] dark:text-white">{t.nav.projects}</a>
+              <a href="#experience" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-bold text-[#1d1d1f] dark:text-white">{t.nav.experience}</a>
+              <Link to="/cv-builder" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-bold text-[#1d1d1f] dark:text-white flex items-center justify-center gap-2"><FileText size={24}/> {t.nav.cv}</Link>
               <a href="#contact" onClick={() => setIsMobileMenuOpen(false)} className="mt-4 bg-[#1d1d1f] dark:bg-white text-white dark:text-[#1d1d1f] px-8 py-4 rounded-full font-bold uppercase tracking-wider mx-auto shadow-lg">
-                Aloqa
+                {t.nav.contact}
               </a>
             </div>
           </motion.div>
@@ -473,13 +560,13 @@ const Hero = ({ settings }: { settings: any }) => {
               <StaggerItem>
                 <h1 className="text-[14vw] md:text-[10vw] lg:text-[8vw] leading-[0.85] font-display font-bold tracking-tighter uppercase text-[#1d1d1f] dark:text-white mb-6">
                   <Typewriter text="Sanjarbek" delay={0.6} /> <br/> 
-                  <Typewriter text="Otabekov." delay={0.9} className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF4E00] to-orange-400" />
+                  <Typewriter text="Otabekov." delay={0.9} className="text-transparent bg-clip-text bg-gradient-to-r from-[#3B82F6] to-cyan-400" />
                 </h1>
               </StaggerItem>
               
               <StaggerItem>
                 <div className="text-xl md:text-2xl font-light tracking-tight text-[#86868b] dark:text-gray-400 max-w-2xl leading-relaxed mt-8">
-                  <Typewriter text={t.hero.description} delay={1.4} />
+                  <WordReveal text={t.hero.description} />
                 </div>
               </StaggerItem>
 
@@ -557,7 +644,7 @@ const Hero = ({ settings }: { settings: any }) => {
               transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
               className="absolute -bottom-4 -right-4 z-20 bg-white/20 dark:bg-white/10 backdrop-blur-2xl p-4 rounded-3xl border border-white/30 shadow-2xl"
             >
-              <Terminal className="text-[#FF4E00] drop-shadow-[0_0_8px_rgba(255,78,0,0.5)]" size={32} />
+              <Terminal className="text-[#3B82F6] drop-shadow-[0_0_8px_rgba(255,78,0,0.5)]" size={32} />
             </motion.div>
 
             <motion.div 
@@ -619,7 +706,7 @@ const Marquee = () => {
             <span className="text-3xl md:text-5xl font-display font-bold text-white dark:text-[#1d1d1f] tracking-tighter uppercase opacity-90">
               {item}
             </span>
-            <Star className="text-[#FF4E00] fill-[#FF4E00]" size={24} />
+            <Star className="text-[#3B82F6] fill-[#3B82F6]" size={24} />
           </div>
         ))}
       </motion.div>
@@ -755,6 +842,7 @@ const BentoCard = ({ children, className, delay = 0, title, fullContent }: { chi
 };
 
 const BentoGrid = ({ settings }: { settings: any }) => {
+  const { t } = useLanguage();
   const [time, setTime] = useState(new Date());
 
   useEffect(() => {
@@ -776,15 +864,13 @@ const BentoGrid = ({ settings }: { settings: any }) => {
         <StaggerContainer className="grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-[280px]">
           <BentoCard 
             className="md:col-span-2 md:row-span-2" 
-            title="Sodda. Kreativ. Samarali."
+            title={settings?.aboutTitle || t.about.aboutTitle}
             fullContent={
               <div className="space-y-6">
                 <Layers className="text-blue-500 mb-4" size={48} />
-                <h3 className="text-4xl font-bold dark:text-white">Sodda. Kreativ. Samarali.</h3>
-                <p className="text-xl text-gray-500 dark:text-gray-400 leading-relaxed">
-                  Dasturlash men uchun shunchaki kod yozish emas, balki insonlar hayotini yengillashtiruvchi vositalar yaratishdir. Har bir loyihada minimalizm va yuqori unumdorlikni birinchi o'ringa qo'yaman. 
-                  <br /><br />
-                  Mening maqsadim - foydalanuvchi interfeyslarini shunchalik sodda qilishki, hatto birinchi marta kirgan odam ham o'zini uydagidek his qilsin. Murakkab muammolarga kreativ yechimlar topish mening asosiy kuchimdir.
+                <h3 className="text-4xl font-bold dark:text-white">{settings?.aboutTitle || t.about.aboutTitle}</h3>
+                <p className="text-xl text-gray-500 dark:text-gray-400 leading-relaxed whitespace-pre-wrap">
+                  {settings?.aboutFull || t.about.aboutFull}
                 </p>
               </div>
             }
@@ -794,9 +880,9 @@ const BentoGrid = ({ settings }: { settings: any }) => {
               </div>
               <div className="relative z-10">
                 <Layers className="text-[#1d1d1f] dark:text-white mb-8" size={40} strokeWidth={1.5} />
-                <h3 className="text-3xl md:text-4xl font-bold text-[#1d1d1f] dark:text-white mb-6 tracking-tight">Sodda. Kreativ. Samarali.</h3>
+                <h3 className="text-3xl md:text-4xl font-bold text-[#1d1d1f] dark:text-white mb-6 tracking-tight">{settings?.aboutTitle || t.about.aboutTitle}</h3>
                 <p className="text-[#86868b] dark:text-gray-400 leading-relaxed text-lg md:text-xl font-light">
-                  Dasturlash men uchun shunchaki kod yozish emas, balki insonlar hayotini yengillashtiruvchi vositalar yaratishdir.
+                  {settings?.aboutShort || t.about.aboutShort}
                 </p>
               </div>
           </BentoCard>
@@ -810,8 +896,8 @@ const BentoGrid = ({ settings }: { settings: any }) => {
                   <Globe size={20} />
                 </div>
                 <div>
-                  <p className="text-sm text-[#86868b] dark:text-gray-400 font-medium tracking-widest uppercase mb-2">Joylashuv</p>
-                  <p className="text-2xl font-bold text-[#1d1d1f] dark:text-white tracking-tight">Toshkent, UZ</p>
+                  <p className="text-sm text-[#86868b] dark:text-gray-400 font-medium tracking-widest uppercase mb-2">{t.bento.location}</p>
+                  <p className="text-2xl font-bold text-[#1d1d1f] dark:text-white tracking-tight">{t.bento.toshkent}</p>
                   <p className="text-sm text-[#86868b] dark:text-gray-400 mt-2 font-mono">
                     {time.toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}
                   </p>
@@ -832,7 +918,7 @@ const BentoGrid = ({ settings }: { settings: any }) => {
                   <Zap size={20} />
                 </div>
                 <div>
-                  <p className="text-6xl font-display font-bold tracking-tighter mb-2">3+</p>
+                  <p className="text-6xl font-display font-bold tracking-tighter mb-2">{settings?.expYears || "3+"}</p>
                   <p className="opacity-80 font-medium tracking-widest uppercase text-sm">Yillik tajriba</p>
                 </div>
               </div>
@@ -844,13 +930,13 @@ const BentoGrid = ({ settings }: { settings: any }) => {
                   <FileText size={20} />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-[#1d1d1f] dark:text-white mb-2 tracking-tight">Rezyume</h3>
+                  <h3 className="text-xl font-bold text-[#1d1d1f] dark:text-white mb-2 tracking-tight">{t.bento.resume}</h3>
                   {settings?.resume ? (
                      <a href={settings.resume} target="_blank" rel="noreferrer" className="text-sm font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                      Yuklab olish <ArrowUpRight size={14} />
+                      {t.projects.download} <ArrowUpRight size={14} />
                     </a>
                   ) : (
-                    <span className="text-sm text-gray-400">Tez orada...</span>
+                    <span className="text-sm text-gray-400">{t.bento.comingSoon}</span>
                   )}
                 </div>
           </BentoCard>
@@ -877,9 +963,45 @@ const BentoGrid = ({ settings }: { settings: any }) => {
                 <Terminal size={20} />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-[#1d1d1f] dark:text-white mb-2 tracking-tight">Stack</h3>
+                <h3 className="text-xl font-bold text-[#1d1d1f] dark:text-white mb-2 tracking-tight">{t.bento.stack}</h3>
                 <p className="text-sm text-[#86868b] dark:text-gray-400">React, Node.js, TypeScript, Tailwind</p>
               </div>
+          </BentoCard>
+
+          <BentoCard className="md:col-span-2 md:row-span-1" title="GitHub">
+            <div className="absolute top-0 right-0 p-6 opacity-5 transition-transform duration-500 text-[#1d1d1f] dark:text-white group-hover:scale-110 group-hover:rotate-12">
+              <Github size={120} />
+            </div>
+            <div className="relative z-10 h-full flex flex-col justify-between">
+              <div className="w-12 h-12 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center text-[#1d1d1f] dark:text-white mb-4">
+                <Github size={20} />
+              </div>
+              <div>
+                <p className="text-sm text-[#86868b] dark:text-gray-400 font-medium tracking-widest uppercase mb-2">{t.bento.githubStats}</p>
+                <div className="flex items-end gap-2">
+                  <p className="text-4xl font-display font-bold text-[#1d1d1f] dark:text-white tracking-tight">{settings?.githubCommits || "1.2k"}</p>
+                  <p className="text-sm text-green-500 font-medium mb-1">{t.bento.commits}</p>
+                </div>
+                <p className="text-sm text-[#86868b] dark:text-gray-400 mt-2">{settings?.githubYearText || t.bento.githubYearText}</p>
+              </div>
+            </div>
+          </BentoCard>
+
+          <BentoCard className="md:col-span-2 md:row-span-1" title="Spotify">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#1DB954]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="absolute top-0 right-0 p-6 opacity-5 transition-transform duration-500 text-[#1DB954] group-hover:scale-110 group-hover:-rotate-12">
+              <Music size={120} />
+            </div>
+            <div className="relative z-10 h-full flex flex-col justify-between">
+              <div className="w-12 h-12 rounded-full bg-[#1DB954]/10 flex items-center justify-center text-[#1DB954] mb-4">
+                <div className="w-4 h-4 rounded-full bg-[#1DB954] animate-pulse"></div>
+              </div>
+              <div>
+                <p className="text-sm text-[#86868b] dark:text-gray-400 font-medium tracking-widest uppercase mb-2">{t.bento.listening}</p>
+                <p className="text-xl font-bold text-[#1d1d1f] dark:text-white tracking-tight line-clamp-1">{settings?.spotifySong || "Lofi Hip Hop Radio"}</p>
+                <p className="text-sm text-[#86868b] dark:text-gray-400 mt-1">{settings?.spotifyArtist || "ChilledCow"}</p>
+              </div>
+            </div>
           </BentoCard>
         </StaggerContainer>
       </div>
@@ -895,7 +1017,7 @@ const getSkillIcon = (name: string) => {
   if (n.includes('javascript') || n.includes('js')) return <Code className="text-yellow-400" size={32} />;
   if (n.includes('next')) return <Zap className="text-black dark:text-white" size={32} />;
   if (n.includes('tailwind')) return <Layers className="text-cyan-400" size={32} />;
-  if (n.includes('firebase')) return <Database className="text-orange-500" size={32} />;
+  if (n.includes('firebase')) return <Database className="text-cyan-500" size={32} />;
   if (n.includes('mongo')) return <Database className="text-green-600" size={32} />;
   if (n.includes('design') || n.includes('ui') || n.includes('ux')) return <Palette className="text-pink-500" size={32} />;
   if (n.includes('git')) return <Github className="text-gray-600" size={32} />;
@@ -948,9 +1070,9 @@ const SkillsAndCerts = () => {
                     rotateX: -5,
                     z: 50
                   }}
-                  className="bg-white/80 dark:bg-[#111]/80 backdrop-blur-md p-6 rounded-3xl border border-black/5 dark:border-white/5 shadow-sm flex flex-col items-center justify-center gap-4 aspect-square transition-all duration-300 hover:shadow-2xl hover:border-orange-500/20 group transform-gpu preserve-3d"
+                  className="bg-white/80 dark:bg-[#111]/80 backdrop-blur-md p-6 rounded-3xl border border-black/5 dark:border-white/5 shadow-sm flex flex-col items-center justify-center gap-4 aspect-square transition-all duration-300 hover:shadow-2xl hover:border-cyan-500/20 group transform-gpu preserve-3d"
                 >
-                  <div className="p-4 rounded-2xl bg-black/5 dark:bg-white/5 group-hover:bg-orange-500/10 transition-colors transform translate-z-10">
+                  <div className="p-4 rounded-2xl bg-black/5 dark:bg-white/5 group-hover:bg-cyan-500/10 transition-colors transform translate-z-10">
                     {getSkillIcon(skill.name)}
                   </div>
                   <span className="font-bold text-[#1d1d1f] dark:text-white tracking-tight text-center transform translate-z-5">{skill.name}</span>
@@ -959,7 +1081,7 @@ const SkillsAndCerts = () => {
                       initial={{ width: 0 }}
                       whileInView={{ width: `${skill.level}%` }}
                       transition={{ duration: 1, delay: 0.5 }}
-                      className="h-full bg-gradient-to-r from-[#FF4E00] to-orange-400 rounded-full"
+                      className="h-full bg-gradient-to-r from-[#3B82F6] to-cyan-400 rounded-full"
                     />
                   </div>
                 </motion.div>
@@ -992,9 +1114,9 @@ const SkillsAndCerts = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 }}
-                  className="bg-white/80 dark:bg-[#111]/80 backdrop-blur-md p-8 rounded-3xl border border-black/5 dark:border-white/5 group hover:border-[#FF4E00]/30 transition-all"
+                  className="bg-white/80 dark:bg-[#111]/80 backdrop-blur-md p-8 rounded-3xl border border-black/5 dark:border-white/5 group hover:border-[#3B82F6]/30 transition-all"
                 >
-                  <div className="w-12 h-12 bg-[#FF4E00]/10 text-[#FF4E00] rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 bg-[#3B82F6]/10 text-[#3B82F6] rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                     <Award size={24} />
                   </div>
                   <h3 className="text-xl font-bold text-[#1d1d1f] dark:text-white mb-2 tracking-tight">{cert.title}</h3>
@@ -1004,7 +1126,7 @@ const SkillsAndCerts = () => {
                       href={cert.link} 
                       target="_blank" 
                       rel="noreferrer"
-                      className="inline-flex items-center gap-2 text-sm font-bold text-[#1d1d1f] dark:text-white hover:text-[#FF4E00] dark:hover:text-[#FF4E00] transition-colors"
+                      className="inline-flex items-center gap-2 text-sm font-bold text-[#1d1d1f] dark:text-white hover:text-[#3B82F6] dark:hover:text-[#3B82F6] transition-colors"
                     >
                       {t.certificates.viewCertificate} <ExternalLink size={14} />
                     </a>
@@ -1044,13 +1166,13 @@ const ServicesSection = () => {
             <StaggerItem key={service.id}>
               <motion.div 
                 whileHover={{ y: -10 }}
-                className="bg-white/80 dark:bg-[#111]/80 backdrop-blur-md p-10 rounded-[2rem] border border-black/5 dark:border-white/5 group hover:border-[#FF4E00]/30 transition-all duration-500 shadow-sm hover:shadow-2xl"
+                className="bg-white/80 dark:bg-[#111]/80 backdrop-blur-md p-10 rounded-[2rem] border border-black/5 dark:border-white/5 group hover:border-[#3B82F6]/30 transition-all duration-500 shadow-sm hover:shadow-2xl"
               >
                 <div className="flex justify-between items-start mb-8">
-                  <div className="text-[#1d1d1f] dark:text-white transition-colors group-hover:text-[#FF4E00] group-hover:scale-110 duration-500">
+                  <div className="text-[#1d1d1f] dark:text-white transition-colors group-hover:text-[#3B82F6] group-hover:scale-110 duration-500">
                     {service.icon}
                   </div>
-                  <span className="text-2xl font-display font-bold text-black/10 dark:text-white/10 transition-colors group-hover:text-[#FF4E00]/20">
+                  <span className="text-2xl font-display font-bold text-black/10 dark:text-white/10 transition-colors group-hover:text-[#3B82F6]/20">
                     {service.id}
                   </span>
                 </div>
@@ -1095,7 +1217,7 @@ const WorkflowSection = () => {
                     whileHover={{ y: -5 }}
                     className="relative z-10 bg-white/80 dark:bg-[#111]/80 backdrop-blur-md p-8 rounded-[2rem] border border-black/5 dark:border-white/5 transition-all duration-500 shadow-sm hover:shadow-xl group"
                   >
-                    <div className="text-5xl font-display font-bold text-black/5 dark:text-white/5 mb-6 group-hover:text-[#FF4E00]/10 transition-colors">{step.id}</div>
+                    <div className="text-5xl font-display font-bold text-black/5 dark:text-white/5 mb-6 group-hover:text-[#3B82F6]/10 transition-colors">{step.id}</div>
                     <h3 className="text-xl font-bold text-[#1d1d1f] dark:text-white mb-3 tracking-tight">{stepData.title}</h3>
                     <p className="text-[#86868b] dark:text-gray-400 font-light leading-relaxed text-sm">{stepData.desc}</p>
                   </motion.div>
@@ -1112,7 +1234,6 @@ const ProjectsSection = ({ settings }: { settings: any }) => {
   const { t, lang } = useLanguage();
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
     if (isFirebaseConfigured && db) {
@@ -1156,18 +1277,7 @@ const ProjectsSection = ({ settings }: { settings: any }) => {
         </div>
       ) : (
         <div className="relative perspective-2000">
-          <motion.div 
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-            animate={{ x: isPaused ? undefined : ["0%", "-50%"] }}
-            transition={{ 
-              duration: 40, 
-              repeat: Infinity, 
-              ease: "linear",
-              repeatType: "loop"
-            }}
-            className="flex gap-12 px-12 w-max"
-          >
+          <div className="flex gap-12 px-12 w-max animate-marquee">
             {displayProjects.map((project, index) => (
               <div key={`${project.id}-${index}`} className="flex-shrink-0 w-[75vw] md:w-[45vw] lg:w-[30vw] py-12">
                 <motion.div 
@@ -1182,7 +1292,7 @@ const ProjectsSection = ({ settings }: { settings: any }) => {
                   className="bg-white/40 dark:bg-white/5 backdrop-blur-2xl rounded-[3rem] p-6 md:p-10 border border-white/20 dark:border-white/10 shadow-2xl group h-full flex flex-col transform-gpu preserve-3d relative"
                 >
                   {/* 3D Floating Tag */}
-                  <div className="absolute -top-4 -right-4 bg-[#FF4E00] text-white px-6 py-2 rounded-full font-bold text-xs shadow-xl transform translate-z-30">
+                  <div className="absolute -top-4 -right-4 bg-[#3B82F6] text-white px-6 py-2 rounded-full font-bold text-xs shadow-xl transform translate-z-30">
                     {project.tag}
                   </div>
 
@@ -1200,7 +1310,7 @@ const ProjectsSection = ({ settings }: { settings: any }) => {
                   
                   <div className="flex-1 flex flex-col transform translate-z-10">
                     <div className="flex items-center gap-4 mb-3">
-                      <div className="h-px w-8 bg-[#FF4E00]"></div>
+                      <div className="h-px w-8 bg-[#3B82F6]"></div>
                       <span className="text-xs font-bold tracking-widest uppercase text-[#86868b] dark:text-gray-500">
                         {String((index % projects.length) + 1).padStart(2, '0')}
                       </span>
@@ -1211,7 +1321,7 @@ const ProjectsSection = ({ settings }: { settings: any }) => {
                     
                     <div className="mt-auto flex flex-wrap items-center gap-3">
                       {project.link && (
-                        <a href={project.link} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white bg-[#FF4E00] px-5 py-2.5 rounded-full transition-all shadow-lg hover:shadow-orange-500/40 hover:-translate-y-1">
+                        <a href={project.link} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white bg-[#3B82F6] px-5 py-2.5 rounded-full transition-all shadow-lg hover:shadow-cyan-500/40 hover:-translate-y-1">
                           {t.projects.viewProject} <ArrowUpRight size={12} />
                         </a>
                       )}
@@ -1225,7 +1335,7 @@ const ProjectsSection = ({ settings }: { settings: any }) => {
                 </motion.div>
               </div>
             ))}
-          </motion.div>
+          </div>
           
           {/* Gradient Overlays for smooth edges */}
           <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-white dark:from-[#0a0a0a] to-transparent z-20 pointer-events-none" />
@@ -1313,13 +1423,16 @@ const ExperienceEducation = () => {
             <StaggerContainer className="space-y-12">
               {experiences.map((exp) => (
                 <StaggerItem key={exp.id}>
-                  <div className="relative pl-8 border-l border-black/10 dark:border-white/10 group">
-                    <div className="absolute top-0 left-0 w-3 h-3 bg-[#FF4E00] rounded-full -translate-x-[6.5px] shadow-[0_0_10px_rgba(255,78,0,0.5)] group-hover:scale-150 transition-transform duration-300"></div>
+                  <motion.div 
+                    whileHover={{ x: 10 }}
+                    className="relative pl-8 border-l border-black/10 dark:border-white/10 group"
+                  >
+                    <div className="absolute top-0 left-0 w-3 h-3 bg-[#3B82F6] rounded-full -translate-x-[6.5px] shadow-[0_0_10px_rgba(255,78,0,0.5)] group-hover:scale-150 transition-transform duration-300"></div>
                     <div className="text-sm font-bold tracking-widest uppercase text-[#86868b] dark:text-gray-500 mb-2">{exp.year}</div>
-                    <h3 className="text-2xl font-bold text-[#1d1d1f] dark:text-white mb-1 tracking-tight group-hover:text-[#FF4E00] transition-colors">{exp.role}</h3>
+                    <h3 className="text-2xl font-bold text-[#1d1d1f] dark:text-white mb-1 tracking-tight group-hover:text-[#3B82F6] transition-colors">{exp.role}</h3>
                     <div className="text-lg text-[#1d1d1f] dark:text-white font-medium mb-4">{exp.company}</div>
                     <p className="text-[#86868b] dark:text-gray-400 font-light leading-relaxed">{exp.desc}</p>
-                  </div>
+                  </motion.div>
                 </StaggerItem>
               ))}
             </StaggerContainer>
@@ -1341,13 +1454,16 @@ const ExperienceEducation = () => {
             <StaggerContainer className="space-y-12">
               {education.map((edu) => (
                 <StaggerItem key={edu.id}>
-                  <div className="relative pl-8 border-l border-black/10 dark:border-white/10 group">
-                    <div className="absolute top-0 left-0 w-3 h-3 bg-[#FF4E00] rounded-full -translate-x-[6.5px] shadow-[0_0_10px_rgba(255,78,0,0.5)] group-hover:scale-150 transition-transform duration-300"></div>
+                  <motion.div 
+                    whileHover={{ x: 10 }}
+                    className="relative pl-8 border-l border-black/10 dark:border-white/10 group"
+                  >
+                    <div className="absolute top-0 left-0 w-3 h-3 bg-[#3B82F6] rounded-full -translate-x-[6.5px] shadow-[0_0_10px_rgba(255,78,0,0.5)] group-hover:scale-150 transition-transform duration-300"></div>
                     <div className="text-sm font-bold tracking-widest uppercase text-[#86868b] dark:text-gray-500 mb-2">{edu.year}</div>
-                    <h3 className="text-2xl font-bold text-[#1d1d1f] dark:text-white mb-1 tracking-tight group-hover:text-[#FF4E00] transition-colors">{edu.degree}</h3>
+                    <h3 className="text-2xl font-bold text-[#1d1d1f] dark:text-white mb-1 tracking-tight group-hover:text-[#3B82F6] transition-colors">{edu.degree}</h3>
                     <div className="text-lg text-[#1d1d1f] dark:text-white font-medium mb-4">{edu.institution}</div>
                     <p className="text-[#86868b] dark:text-gray-400 font-light leading-relaxed">{edu.desc}</p>
-                  </div>
+                  </motion.div>
                 </StaggerItem>
               ))}
             </StaggerContainer>
@@ -1441,26 +1557,26 @@ const Contact = ({ settings }: { settings: any }) => {
             <StaggerContainer>
               <StaggerItem>
                 <div className="relative group">
-                  <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-transparent border-b border-white/20 py-6 text-2xl text-white focus:outline-none focus:border-[#FF4E00] transition-colors placeholder:text-gray-600 font-light" placeholder="Ismingiz" />
-                  <div className="absolute bottom-0 left-0 w-0 h-px bg-[#FF4E00] group-focus-within:w-full transition-all duration-500"></div>
+                  <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-transparent border-b border-white/20 py-6 text-2xl text-white focus:outline-none focus:border-[#3B82F6] transition-colors placeholder:text-gray-600 font-light" placeholder="Ismingiz" />
+                  <div className="absolute bottom-0 left-0 w-0 h-px bg-[#3B82F6] group-focus-within:w-full transition-all duration-500"></div>
                 </div>
               </StaggerItem>
               <StaggerItem>
                 <div className="relative group">
-                  <input required type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full bg-transparent border-b border-white/20 py-6 text-2xl text-white focus:outline-none focus:border-[#FF4E00] transition-colors placeholder:text-gray-600 font-light" placeholder="Email manzilingiz" />
-                  <div className="absolute bottom-0 left-0 w-0 h-px bg-[#FF4E00] group-focus-within:w-full transition-all duration-500"></div>
+                  <input required type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full bg-transparent border-b border-white/20 py-6 text-2xl text-white focus:outline-none focus:border-[#3B82F6] transition-colors placeholder:text-gray-600 font-light" placeholder="Email manzilingiz" />
+                  <div className="absolute bottom-0 left-0 w-0 h-px bg-[#3B82F6] group-focus-within:w-full transition-all duration-500"></div>
                 </div>
               </StaggerItem>
               <StaggerItem>
                 <div className="relative group">
-                  <textarea required value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})} className="w-full bg-transparent border-b border-white/20 py-6 text-2xl text-white focus:outline-none focus:border-[#FF4E00] transition-colors placeholder:text-gray-600 font-light resize-none" rows={4} placeholder="Xabaringiz..."></textarea>
-                  <div className="absolute bottom-0 left-0 w-0 h-px bg-[#FF4E00] group-focus-within:w-full transition-all duration-500"></div>
+                  <textarea required value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})} className="w-full bg-transparent border-b border-white/20 py-6 text-2xl text-white focus:outline-none focus:border-[#3B82F6] transition-colors placeholder:text-gray-600 font-light resize-none" rows={4} placeholder="Xabaringiz..."></textarea>
+                  <div className="absolute bottom-0 left-0 w-0 h-px bg-[#3B82F6] group-focus-within:w-full transition-all duration-500"></div>
                 </div>
               </StaggerItem>
               <StaggerItem>
                 <Magnetic>
                   <button type="submit" disabled={loading} className="flex items-center gap-6 text-2xl font-medium transition-all group mt-8 disabled:opacity-50">
-                    <span className="w-16 h-16 rounded-full bg-[#FF4E00] text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                    <span className="w-16 h-16 rounded-full bg-[#3B82F6] text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                       <ArrowUpRight size={32} />
                     </span>
                     <span className="group-hover:translate-x-2 transition-transform">
@@ -1592,6 +1708,7 @@ export default function Portfolio() {
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
         >
+          <ReactionsWidget />
           <ScrollProgress />
           <ScrollToTop />
           <FloatingNav isDark={isDark} toggleDark={toggleDark} />

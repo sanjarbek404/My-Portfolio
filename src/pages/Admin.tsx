@@ -177,9 +177,9 @@ const Dashboard = () => {
           transition={{ duration: 0.4, delay: 0.3 }}
           className="bg-white dark:bg-[#1d1d1f] p-8 rounded-[2rem] shadow-xl shadow-black/5 border border-white/20 relative overflow-hidden group"
         >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full blur-3xl -mr-16 -mt-16 transition-all group-hover:bg-orange-500/20"></div>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-3xl -mr-16 -mt-16 transition-all group-hover:bg-cyan-500/20"></div>
           <div className="flex items-center gap-4 mb-4 relative z-10">
-            <div className="w-14 h-14 bg-orange-50 dark:bg-orange-500/20 rounded-2xl flex items-center justify-center text-orange-600 dark:text-orange-400">
+            <div className="w-14 h-14 bg-cyan-50 dark:bg-cyan-500/20 rounded-2xl flex items-center justify-center text-cyan-600 dark:text-cyan-400">
               <BarChart3 size={28} />
             </div>
             <div>
@@ -1300,7 +1300,17 @@ const ServicesManager = () => {
 const SettingsManager = () => {
   const [heroImage, setHeroImage] = useState('');
   const [isUploading, setIsUploading] = useState(false);
-  const [socials, setSocials] = useState({ github: '', linkedin: '', telegram: '', instagram: '', resume: '', email: '' });
+  const [socials, setSocials] = useState({ 
+    github: '', linkedin: '', telegram: '', instagram: '', resume: '', email: '',
+    aboutTitle: 'Sodda. Kreativ. Samarali.', 
+    aboutShort: 'Dasturlash men uchun shunchaki kod yozish emas, balki insonlar hayotini yengillashtiruvchi vositalar yaratishdir.', 
+    aboutFull: 'Dasturlash men uchun shunchaki kod yozish emas, balki insonlar hayotini yengillashtiruvchi vositalar yaratishdir. Har bir loyihada minimalizm va yuqori unumdorlikni birinchi o\'ringa qo\'yaman.\n\nMening maqsadim - foydalanuvchi interfeyslarini shunchalik sodda qilishki, hatto birinchi marta kirgan odam ham o\'zini uydagidek his qilsin. Murakkab muammolarga kreativ yechimlar topish mening asosiy kuchimdir.', 
+    expYears: '3+', 
+    githubCommits: '1.2k', 
+    githubYearText: 'Bu yilgi faollik',
+    spotifySong: 'Lofi Hip Hop Radio', 
+    spotifyArtist: 'ChilledCow'
+  });
   const [isSavingSocials, setIsSavingSocials] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -1454,6 +1464,46 @@ const SettingsManager = () => {
         </div>
 
         <div className="border-t border-gray-100 dark:border-white/10 pt-12">
+          <h3 className="text-2xl font-bold text-[#1d1d1f] dark:text-white mb-8">Men haqimda (BentoGrid)</h3>
+          <form className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mb-12">
+            <div className="md:col-span-2">
+              <label className="block text-sm font-bold text-[#1d1d1f] dark:text-gray-300 mb-2 uppercase tracking-wider">Sarlavha</label>
+              <input type="text" value={socials.aboutTitle} onChange={e => setSocials({...socials, aboutTitle: e.target.value})} className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl py-4 px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-[#1d1d1f] dark:text-white font-medium" placeholder="Sodda. Kreativ. Samarali." />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-bold text-[#1d1d1f] dark:text-gray-300 mb-2 uppercase tracking-wider">Qisqacha ma'lumot</label>
+              <textarea value={socials.aboutShort} onChange={e => setSocials({...socials, aboutShort: e.target.value})} rows={2} className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl py-4 px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-[#1d1d1f] dark:text-white font-medium" placeholder="Qisqacha ma'lumot..." />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-bold text-[#1d1d1f] dark:text-gray-300 mb-2 uppercase tracking-wider">To'liq ma'lumot</label>
+              <textarea value={socials.aboutFull} onChange={e => setSocials({...socials, aboutFull: e.target.value})} rows={5} className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl py-4 px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-[#1d1d1f] dark:text-white font-medium" placeholder="To'liq ma'lumot..." />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-[#1d1d1f] dark:text-gray-300 mb-2 uppercase tracking-wider">Tajriba yillari</label>
+              <input type="text" value={socials.expYears} onChange={e => setSocials({...socials, expYears: e.target.value})} className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl py-4 px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-[#1d1d1f] dark:text-white font-medium" placeholder="3+" />
+            </div>
+          </form>
+
+          <h3 className="text-2xl font-bold text-[#1d1d1f] dark:text-white mb-8">GitHub & Spotify (BentoGrid)</h3>
+          <form className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mb-12">
+            <div>
+              <label className="block text-sm font-bold text-[#1d1d1f] dark:text-gray-300 mb-2 uppercase tracking-wider">GitHub Commits</label>
+              <input type="text" value={socials.githubCommits} onChange={e => setSocials({...socials, githubCommits: e.target.value})} className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl py-4 px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-[#1d1d1f] dark:text-white font-medium" placeholder="1.2k" />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-[#1d1d1f] dark:text-gray-300 mb-2 uppercase tracking-wider">GitHub Matn</label>
+              <input type="text" value={socials.githubYearText} onChange={e => setSocials({...socials, githubYearText: e.target.value})} className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl py-4 px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-[#1d1d1f] dark:text-white font-medium" placeholder="Bu yilgi faollik" />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-[#1d1d1f] dark:text-gray-300 mb-2 uppercase tracking-wider">Spotify Qo'shiq</label>
+              <input type="text" value={socials.spotifySong} onChange={e => setSocials({...socials, spotifySong: e.target.value})} className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl py-4 px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-[#1d1d1f] dark:text-white font-medium" placeholder="Lofi Hip Hop Radio" />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-[#1d1d1f] dark:text-gray-300 mb-2 uppercase tracking-wider">Spotify Ijrochi</label>
+              <input type="text" value={socials.spotifyArtist} onChange={e => setSocials({...socials, spotifyArtist: e.target.value})} className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl py-4 px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-[#1d1d1f] dark:text-white font-medium" placeholder="ChilledCow" />
+            </div>
+          </form>
+
           <h3 className="text-2xl font-bold text-[#1d1d1f] dark:text-white mb-8">Ijtimoiy tarmoqlar va Havolalar</h3>
           <form onSubmit={handleSaveSocials} className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl">
             <div>

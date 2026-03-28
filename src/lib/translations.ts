@@ -19,12 +19,26 @@ export const translations = {
     },
     about: {
       title: "Men haqimda",
+      aboutTitle: "Sodda. Kreativ. Samarali.",
+      aboutFull: "Dasturlash men uchun shunchaki kod yozish emas, balki insonlar hayotini yengillashtiruvchi vositalar yaratishdir. Har bir loyihada minimalizm va yuqori unumdorlikni birinchi o'ringa qo'yaman.\n\nMening maqsadim - foydalanuvchi interfeyslarini shunchalik sodda qilishki, hatto birinchi marta kirgan odam ham o'zini uydagidek his qilsin. Murakkab muammolarga kreativ yechimlar topish mening asosiy kuchimdir.",
+      aboutShort: "Dasturlash men uchun shunchaki kod yozish emas, balki insonlar hayotini yengillashtiruvchi vositalar yaratishdir.",
       description: "Men Sanjarbek Otabekov, tajribali Full-Stack dasturchiman. 5 yildan ortiq vaqt davomida murakkab veb-tizimlar va mobil ilovalar ustida ishlayapman. Mening maqsadim - foydalanuvchilar hayotini osonlashtiradigan va bizneslarga o'sishga yordam beradigan raqamli mahsulotlar yaratish.",
       stats: {
         experience: "Yillik tajriba",
         projects: "Tugallangan loyihalar",
         clients: "Mamnun mijozlar"
       }
+    },
+    bento: {
+      location: "Joylashuv",
+      resume: "Rezyume",
+      stack: "Stack",
+      githubStats: "GitHub Stats",
+      listening: "Hozir tinglayapman",
+      comingSoon: "Tez orada...",
+      commits: "+ Commits",
+      githubYearText: "Bu yilgi faollik",
+      toshkent: "Toshkent, UZ"
     },
     skills: {
       title: "Ko'nikmalar",
@@ -108,12 +122,26 @@ export const translations = {
     },
     about: {
       title: "Обо мне",
+      aboutTitle: "Просто. Креативно. Эффективно.",
+      aboutFull: "Программирование для меня — это не просто написание кода, это создание инструментов, облегчающих жизнь людям. В каждом проекте я ставлю минимализм и высокую производительность на первое место.\n\nМоя цель — сделать пользовательские интерфейсы настолько простыми, чтобы даже человек, зашедший впервые, чувствовал себя как дома. Находить креативные решения сложных проблем — моя главная сила.",
+      aboutShort: "Программирование для меня — это не просто написание кода, это создание инструментов, облегчающих жизнь людям.",
       description: "Я Санжарбек Отабеков, опытный Full-Stack разработчик. Более 5 лет я работаю над сложными веб-системами и мобильными приложениями. Моя цель — создавать цифровые продукты, которые облегчают жизнь пользователей и помогают бизнесу расти.",
       stats: {
         experience: "Лет опыта",
         projects: "Завершенных проектов",
         clients: "Довольных клиентов"
       }
+    },
+    bento: {
+      location: "Местоположение",
+      resume: "Резюме",
+      stack: "Стек",
+      githubStats: "GitHub Stats",
+      listening: "Сейчас слушаю",
+      comingSoon: "Скоро...",
+      commits: "+ Коммитов",
+      githubYearText: "Активность в этом году",
+      toshkent: "Ташкент, УЗ"
     },
     skills: {
       title: "Навыки",
@@ -197,12 +225,26 @@ export const translations = {
     },
     about: {
       title: "About Me",
+      aboutTitle: "Simple. Creative. Effective.",
+      aboutFull: "For me, programming is not just writing code; it's creating tools that make people's lives easier. In every project, I prioritize minimalism and high performance.\n\nMy goal is to make user interfaces so simple that even a first-time visitor feels at home. Finding creative solutions to complex problems is my main strength.",
+      aboutShort: "For me, programming is not just writing code; it's creating tools that make people's lives easier.",
       description: "I'm Sanjarbek Otabekov, an experienced Full-Stack developer. For over 5 years, I've been working on complex web systems and mobile applications. My goal is to create digital products that make users' lives easier and help businesses grow.",
       stats: {
         experience: "Years of experience",
         projects: "Completed projects",
         clients: "Happy clients"
       }
+    },
+    bento: {
+      location: "Location",
+      resume: "Resume",
+      stack: "Stack",
+      githubStats: "GitHub Stats",
+      listening: "Listening to",
+      comingSoon: "Coming soon...",
+      commits: "+ Commits",
+      githubYearText: "This year's activity",
+      toshkent: "Tashkent, UZ"
     },
     skills: {
       title: "Skills",

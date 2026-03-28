@@ -11,11 +11,15 @@ import Login from './pages/Login';
 import Admin from './pages/Admin';
 import CVBuilder from './pages/CVBuilder';
 import { LanguageProvider } from './lib/LanguageContext';
+import { GoogleAnalytics } from './components/GoogleAnalytics';
+
 
 export default function App() {
   return (
     <LanguageProvider>
       <Router>
+        <GoogleAnalytics />
+        
         <Toaster 
           position="top-center"
           toastOptions={{

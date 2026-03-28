@@ -94,9 +94,9 @@ export const translations = {
       title: "Mijozlar Fikri",
       subtitle: "Men bilan ishlagan insonlar nima deydi?",
       items: [
-        { name: "Azizbek Rahimov", role: "CEO, TechStart", text: "Sanjarbek bilan ishlash juda oson kechdi. U bizning talablarimizni tez tushundi va ajoyib veb-ilova yaratib berdi." },
-        { name: "Malika Karimova", role: "Marketing Menejer", text: "Dizayn va funksionallik uyg'unligi ajoyib. Saytimizning konversiya darajasi sezilarli darajada oshdi." },
-        { name: "Sardor Aliyev", role: "Startup Asoschisi", text: "O'z ishining ustasi. Murakkab muammolarga oddiy va samarali yechimlar topa oladi. Tavsiya qilaman!" }
+        
+       
+        { name: "Mijoz", role: "Mebel Do`koni", text: "Bizning Web saytimizni ajoyib qilib ishlab chiqdi " }
       ]
     },
     footer: {

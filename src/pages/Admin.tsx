@@ -1305,11 +1305,11 @@ const SettingsManager = () => {
     aboutTitle: 'Sodda. Kreativ. Samarali.', 
     aboutShort: 'Dasturlash men uchun shunchaki kod yozish emas, balki insonlar hayotini yengillashtiruvchi vositalar yaratishdir.', 
     aboutFull: 'Dasturlash men uchun shunchaki kod yozish emas, balki insonlar hayotini yengillashtiruvchi vositalar yaratishdir. Har bir loyihada minimalizm va yuqori unumdorlikni birinchi o\'ringa qo\'yaman.\n\nMening maqsadim - foydalanuvchi interfeyslarini shunchalik sodda qilishki, hatto birinchi marta kirgan odam ham o\'zini uydagidek his qilsin. Murakkab muammolarga kreativ yechimlar topish mening asosiy kuchimdir.', 
-    expYears: '3+', 
-    githubCommits: '1.2k', 
+    expYears: '1+', 
+    githubCommits: '110+', 
     githubYearText: 'Bu yilgi faollik',
-    spotifySong: 'Lofi Hip Hop Radio', 
-    spotifyArtist: 'ChilledCow'
+    spotifySong: 'Lofi Programming Coding Playist', 
+    spotifyArtist: 'Calm Radio'
   });
   const [isSavingSocials, setIsSavingSocials] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);

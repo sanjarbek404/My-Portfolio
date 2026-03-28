@@ -532,7 +532,7 @@ const Hero = ({ settings }: { settings: any }) => {
   }, []);
 
   const handleCopyEmail = () => {
-    navigator.clipboard.writeText(settings?.email || 'hello@example.com');
+    navigator.clipboard.writeText(settings?.email || 'sanjarbekotabekov010@gmail.com');
     setCopied(true);
     toast.success("Email nusxalandi!");
     setTimeout(() => setCopied(false), 2000);
@@ -551,7 +551,7 @@ const Hero = ({ settings }: { settings: any }) => {
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
                     </span>
-                    {lang === 'UZ' ? "Freelance uchun bo'shman" : lang === 'RU' ? "Доступен для фриланса" : "Available for freelance"}
+                    {lang === 'UZ' ? "Xozirda O`z ustimda ishlayapman" : lang === 'RU' ? "Доступен для фриланса" : "Available for freelance"}
                   </div>
                   <LocalTime />
                 </div>
@@ -1519,8 +1519,8 @@ const Contact = ({ settings }: { settings: any }) => {
           </p>
           
           <div className="flex flex-col gap-6">
-            <a href={`mailto:${settings?.email || 'hello@example.com'}`} className="text-2xl md:text-4xl font-light transition-colors w-max">
-              {settings?.email || 'hello@example.com'}
+            <a href={`mailto:${settings?.email || 'sanjarbekotabekov010@gmail.com'}`} className="text-2xl md:text-4xl font-light transition-colors w-max">
+              {settings?.email || 'sanjarbekotabekov010@gmail.com'}
             </a>
             <div className="flex gap-4 mt-4">
               {settings?.github && (

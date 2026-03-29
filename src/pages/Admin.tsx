@@ -1302,14 +1302,14 @@ const SettingsManager = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [socials, setSocials] = useState({ 
     github: '', linkedin: '', telegram: '', instagram: '', resume: '', email: '',
-    aboutTitle: 'Sodda. Kreativ. Samarali.', 
+    aboutTitle: 'Men Haqimda', 
     aboutShort: 'Dasturlash men uchun shunchaki kod yozish emas, balki insonlar hayotini yengillashtiruvchi vositalar yaratishdir.', 
     aboutFull: 'Dasturlash men uchun shunchaki kod yozish emas, balki insonlar hayotini yengillashtiruvchi vositalar yaratishdir. Har bir loyihada minimalizm va yuqori unumdorlikni birinchi o\'ringa qo\'yaman.\n\nMening maqsadim - foydalanuvchi interfeyslarini shunchalik sodda qilishki, hatto birinchi marta kirgan odam ham o\'zini uydagidek his qilsin. Murakkab muammolarga kreativ yechimlar topish mening asosiy kuchimdir.', 
     expYears: '1+', 
-    githubCommits: '110+', 
+    githubCommits: '120', 
     githubYearText: 'Bu yilgi faollik',
-    spotifySong: 'Lofi Programming Coding Playist', 
-    spotifyArtist: 'Calm Radio'
+    spotifySong: 'Lofi Programming  Playist', 
+    spotifyArtist: 'Programming Playist'
   });
   const [isSavingSocials, setIsSavingSocials] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);

@@ -551,7 +551,7 @@ const Hero = ({ settings }: { settings: any }) => {
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
                     </span>
-                    {lang === 'UZ' ? "Xozirda O`z ustimda ishlayapman" : lang === 'RU' ? "Доступен для фриланса" : "Available for freelance"}
+                    {lang === 'UZ' ? "Freelance uchun bo'shman" : lang === 'RU' ? "Доступен для фриланса" : "Available for freelance"}
                   </div>
                   <LocalTime />
                 </div>
@@ -666,7 +666,7 @@ const Hero = ({ settings }: { settings: any }) => {
               className="relative w-full h-full rounded-full overflow-hidden border-4 border-white/20 dark:border-white/10 shadow-2xl transform-gpu"
             >
                 <img 
-                src={heroImage || ""} 
+                src={heroImage || "https://picsum.photos/seed/sanjarbek/800/800"} 
                 alt="Sanjarbek Otabekov" 
                 className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
                 referrerPolicy="no-referrer"

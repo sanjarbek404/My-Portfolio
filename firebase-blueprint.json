@@ -1,0 +1,130 @@
+{
+  "entities": {
+    "Project": {
+      "title": "Project",
+      "description": "A portfolio project",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "desc": { "type": "string" },
+        "image": { "type": "string" },
+        "link": { "type": "string" },
+        "githubUrl": { "type": "string" },
+        "tag": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "desc", "image"]
+    },
+    "Skill": {
+      "title": "Skill",
+      "description": "A technical skill",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "level": { "type": "number" },
+        "category": { "type": "string" }
+      },
+      "required": ["name", "level"]
+    },
+    "Certificate": {
+      "title": "Certificate",
+      "description": "A professional certificate",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "issuer": { "type": "string" },
+        "date": { "type": "string" },
+        "image": { "type": "string" },
+        "link": { "type": "string" }
+      },
+      "required": ["title", "issuer"]
+    },
+    "Experience": {
+      "title": "Experience",
+      "description": "Work experience entry",
+      "type": "object",
+      "properties": {
+        "company": { "type": "string" },
+        "role": { "type": "string" },
+        "period": { "type": "string" },
+        "desc": { "type": "string" }
+      },
+      "required": ["company", "role", "period"]
+    },
+    "Education": {
+      "title": "Education",
+      "description": "Educational background entry",
+      "type": "object",
+      "properties": {
+        "school": { "type": "string" },
+        "degree": { "type": "string" },
+        "period": { "type": "string" }
+      },
+      "required": ["school", "degree", "period"]
+    },
+    "Service": {
+      "title": "Service",
+      "description": "A service offered",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "desc": { "type": "string" }
+      },
+      "required": ["title", "desc"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "A contact message from a visitor",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "message": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "email", "message", "createdAt"]
+    },
+    "Analytics": {
+      "title": "Analytics",
+      "description": "Daily visitor analytics",
+      "type": "object",
+      "properties": {
+        "views": { "type": "number" },
+        "visitors": { "type": "number" },
+        "date": { "type": "string", "format": "date" }
+      }
+    },
+    "Stats": {
+      "title": "Stats",
+      "description": "Global stats like reactions",
+      "type": "object",
+      "properties": {
+        "like": { "type": "number" },
+        "heart": { "type": "number" },
+        "fire": { "type": "number" },
+        "rocket": { "type": "number" }
+      }
+    },
+    "Settings": {
+      "title": "Settings",
+      "description": "General site settings",
+      "type": "object",
+      "properties": {
+        "hero": { "type": "object" },
+        "general": { "type": "object" }
+      }
+    }
+  },
+  "firestore": {
+    "/projects": { "schema": "Project", "description": "Portfolio projects" },
+    "/skills": { "schema": "Skill", "description": "Technical skills" },
+    "/certificates": { "schema": "Certificate", "description": "Certificates" },
+    "/experience": { "schema": "Experience", "description": "Work experience" },
+    "/education": { "schema": "Education", "description": "Education" },
+    "/services": { "schema": "Service", "description": "Services offered" },
+    "/messages": { "schema": "Message", "description": "Contact messages" },
+    "/analytics": { "schema": "Analytics", "description": "Visitor analytics" },
+    "/stats": { "schema": "Stats", "description": "Global statistics" },
+    "/settings": { "schema": "Settings", "description": "Site settings" }
+  }
+}

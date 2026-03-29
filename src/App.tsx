@@ -12,14 +12,12 @@ import Admin from './pages/Admin';
 import CVBuilder from './pages/CVBuilder';
 import { LanguageProvider } from './lib/LanguageContext';
 import { GoogleAnalytics } from './components/GoogleAnalytics';
-import { CustomCursor } from './components/CustomCursor';
 
 export default function App() {
   return (
     <LanguageProvider>
       <Router>
         <GoogleAnalytics />
-        <CustomCursor />
         <Toaster 
           position="top-center"
           toastOptions={{

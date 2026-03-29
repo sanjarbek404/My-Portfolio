@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, AnimatePresence, useInView, useTransform, useMotionTemplate, useMotionValue } from 'motion/react';
-import { Github, Linkedin, Mail, ArrowRight, Code, Globe, Zap, Layers, Moon, Sun, Award, ExternalLink, Briefcase, MonitorSmartphone, Server, PenTool, GraduationCap, Lock, FileText, Terminal, Coffee, Users, Star, ArrowUpRight, Send, Instagram, Copy, Check, Download, Cpu, Braces, X, Palette, Database, Music, Heart, ThumbsUp, Flame, Rocket } from 'lucide-react';
-import { db, isFirebaseConfigured } from '../lib/firebase';
+import { Github, Linkedin, Mail, ArrowRight, Code, Globe, Zap, Layers, Moon, Sun, Award, ExternalLink, Briefcase, MonitorSmartphone, Server, PenTool, GraduationCap, Lock, FileText, Terminal, Coffee, Users, User, Star, ArrowUpRight, Send, Instagram, Copy, Check, Download, Cpu, Braces, X, Palette, Database, Music, Heart, ThumbsUp, Flame, Rocket } from 'lucide-react';
+import { db, isFirebaseConfigured, handleFirestoreError, OperationType } from '../lib/firebase';
 import { collection, onSnapshot, doc, setDoc, increment, addDoc } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -172,8 +172,9 @@ const ReactionsWidget = () => {
       await setDoc(doc(db, 'stats', 'reactions'), {
         [type]: increment(1)
       }, { merge: true });
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, 'stats/reactions');
+      console.error(error);
     }
   };
 
@@ -377,10 +378,11 @@ const FloatingNav = ({ isDark, toggleDark }: { isDark: boolean, toggleDark: () =
   return (
     <>
       <ThemeTransition isDark={isDark} trigger={themeTrigger} />
-      <div className="fixed inset-0 z-[-1] transition-colors duration-500">
+      <div className="fixed inset-0 z-[-1] transition-colors duration-500 overflow-hidden">
         <div className="absolute inset-0 bg-dot-pattern [mask-image:radial-gradient(ellipse_at_center,black,transparent_80%)]"></div>
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-[#3B82F6]/10 blur-[120px] pointer-events-none"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-500/10 blur-[120px] pointer-events-none"></div>
+        <div className="absolute inset-0 bg-noise pointer-events-none"></div>
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-[#3B82F6]/10 blur-[120px] pointer-events-none animate-pulse"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-blue-500/10 blur-[120px] pointer-events-none animate-pulse" style={{ animationDelay: '2s' }}></div>
       </div>
       <motion.nav 
         initial={{ y: -100 }}
@@ -546,10 +548,10 @@ const Hero = ({ settings }: { settings: any }) => {
             <StaggerContainer delay={0.5}>
               <StaggerItem>
                 <div className="flex flex-wrap items-center gap-4 mb-8">
-                  <div className="flex items-center gap-2 bg-green-500/10 text-green-600 dark:text-green-400 px-4 py-2 rounded-full text-sm font-medium border border-green-500/20 w-max">
+                  <div className="flex items-center gap-2 bg-blue-500/10 text-blue-600 dark:text-blue-400 px-4 py-2 rounded-full text-sm font-medium border border-blue-500/20 w-max">
                     <span className="relative flex h-2.5 w-2.5">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-500"></span>
                     </span>
                     {lang === 'UZ' ? "Freelance uchun bo'shman" : lang === 'RU' ? "Доступен для фриланса" : "Available for freelance"}
                   </div>
@@ -558,14 +560,14 @@ const Hero = ({ settings }: { settings: any }) => {
               </StaggerItem>
 
               <StaggerItem>
-                <h1 className="text-[14vw] md:text-[10vw] lg:text-[8vw] leading-[0.85] font-display font-bold tracking-tighter uppercase text-[#1d1d1f] dark:text-white mb-6">
+                <h1 className="text-[14vw] md:text-[10vw] lg:text-[7vw] leading-[0.85] font-display font-bold tracking-tighter uppercase text-[#1d1d1f] dark:text-white mb-6">
                   <Typewriter text="Sanjarbek" delay={0.6} /> <br/> 
-                  <Typewriter text="Otabekov." delay={0.9} className="text-transparent bg-clip-text bg-gradient-to-r from-[#3B82F6] to-cyan-400" />
+                  <Typewriter text="Otabekov." delay={0.9} className="text-transparent bg-clip-text bg-gradient-to-r from-[#3B82F6] via-blue-400 to-cyan-400" />
                 </h1>
               </StaggerItem>
               
               <StaggerItem>
-                <div className="text-xl md:text-2xl font-light tracking-tight text-[#86868b] dark:text-gray-400 max-w-2xl leading-relaxed mt-8">
+                <div className="text-xl md:text-2xl font-light tracking-tight text-[#86868b] dark:text-gray-400 max-w-2xl leading-relaxed mt-8 border-l-2 border-blue-500/30 pl-6">
                   <WordReveal text={t.hero.description} />
                 </div>
               </StaggerItem>
@@ -626,51 +628,52 @@ const Hero = ({ settings }: { settings: any }) => {
             initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
             animate={{ opacity: 1, scale: 1, rotate: 0 }}
             transition={{ duration: 1.2, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="flex-shrink-0 relative w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 mt-12 lg:mt-0"
+            className="flex-shrink-0 relative w-64 h-64 md:w-80 md:h-80 lg:w-[450px] lg:h-[450px] mt-12 lg:mt-0"
           >
-            <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/30 to-purple-500/30 rounded-full blur-[60px] animate-pulse"></div>
+            <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/40 to-cyan-400/40 rounded-full blur-[80px] animate-pulse"></div>
             
+            {/* Main Image Card */}
+            <div className="relative w-full h-full rounded-[3rem] overflow-hidden border border-white/20 dark:border-white/10 shadow-2xl backdrop-blur-sm bg-white/5 p-2">
+              <div className="w-full h-full rounded-[2.5rem] overflow-hidden bg-gray-100 dark:bg-[#111] relative group">
+                {heroImage ? (
+                  <img 
+                    src={heroImage} 
+                    alt="Sanjarbek Otabekov" 
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-500/20 to-purple-500/20">
+                    <User size={120} className="text-blue-500/40" />
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              </div>
+            </div>
+
             {/* Floating Programming Icons */}
             <motion.div 
               animate={{ y: [0, -20, 0], rotate: [0, 15, 0] }}
               transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -top-4 -left-4 z-20 bg-white/20 dark:bg-white/10 backdrop-blur-2xl p-4 rounded-3xl border border-white/30 shadow-2xl"
+              className="absolute -top-6 -left-6 z-20 bg-white/40 dark:bg-white/10 backdrop-blur-2xl p-5 rounded-[2rem] border border-white/40 shadow-2xl"
             >
-              <Code className="text-blue-500 drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]" size={32} />
+              <Code className="text-blue-500 drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]" size={36} />
             </motion.div>
 
             <motion.div 
               animate={{ y: [0, 20, 0], rotate: [0, -15, 0] }}
               transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-              className="absolute -bottom-4 -right-4 z-20 bg-white/20 dark:bg-white/10 backdrop-blur-2xl p-4 rounded-3xl border border-white/30 shadow-2xl"
+              className="absolute -bottom-6 -right-6 z-20 bg-white/40 dark:bg-white/10 backdrop-blur-2xl p-5 rounded-[2rem] border border-white/40 shadow-2xl"
             >
-              <Terminal className="text-[#3B82F6] drop-shadow-[0_0_8px_rgba(255,78,0,0.5)]" size={32} />
+              <Terminal className="text-cyan-500 drop-shadow-[0_0_8px_rgba(6,182,212,0.5)]" size={36} />
             </motion.div>
 
             <motion.div 
-              onMouseMove={(e) => {
-                const rect = e.currentTarget.getBoundingClientRect();
-                const x = e.clientX - (rect.left + rect.width / 2);
-                const y = e.clientY - (rect.top + rect.height / 2);
-                e.currentTarget.style.setProperty('--rotate-x', `${-y / 10}deg`);
-                e.currentTarget.style.setProperty('--rotate-y', `${x / 10}deg`);
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.setProperty('--rotate-x', '0deg');
-                e.currentTarget.style.setProperty('--rotate-y', '0deg');
-              }}
-              style={{ 
-                transform: 'perspective(1000px) rotateX(var(--rotate-x, 0deg)) rotateY(var(--rotate-y, 0deg))',
-                transition: 'transform 0.1s ease-out'
-              } as any}
-              className="relative w-full h-full rounded-full overflow-hidden border-4 border-white/20 dark:border-white/10 shadow-2xl transform-gpu"
+              animate={{ x: [0, 15, 0], y: [0, 15, 0] }}
+              transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+              className="absolute top-1/2 -right-8 z-20 bg-white/40 dark:bg-white/10 backdrop-blur-2xl p-4 rounded-2xl border border-white/40 shadow-2xl"
             >
-                <img 
-                src={heroImage || "https://picsum.photos/seed/sanjarbek/800/800"} 
-                alt="Sanjarbek Otabekov" 
-                className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
-                referrerPolicy="no-referrer"
-                />
+              <Cpu className="text-purple-500" size={24} />
             </motion.div>
           </motion.div>
         </div>
@@ -918,7 +921,7 @@ const BentoGrid = ({ settings }: { settings: any }) => {
                   <Zap size={20} />
                 </div>
                 <div>
-                  <p className="text-6xl font-display font-bold tracking-tighter mb-2">{settings?.expYears || "3+"}</p>
+                  <p className="text-6xl font-display font-bold tracking-tighter mb-2">{settings?.expYears || "1+"}</p>
                   <p className="opacity-80 font-medium tracking-widest uppercase text-sm">Yillik tajriba</p>
                 </div>
               </div>
@@ -1248,11 +1251,11 @@ const ProjectsSection = ({ settings }: { settings: any }) => {
     }
   }, []);
 
-  // Double the projects for infinite marquee effect
-  const displayProjects = [...projects, ...projects];
+  // No doubling, just use the projects array
+  const displayProjects = projects;
 
   return (
-    <section id="projects" className="py-32 overflow-hidden relative bg-dot-pattern">
+    <section id="projects" className="py-32 relative bg-dot-pattern">
       <div className="max-w-7xl mx-auto px-6 md:px-12 mb-20 relative z-10">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
           <div>
@@ -1276,52 +1279,38 @@ const ProjectsSection = ({ settings }: { settings: any }) => {
           {t.projects.noProjects}
         </div>
       ) : (
-        <div className="relative perspective-2000">
-          <div className="flex gap-12 px-12 w-max animate-marquee">
+        <div className="max-w-7xl mx-auto px-6 md:px-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {displayProjects.map((project, index) => (
-              <div key={`${project.id}-${index}`} className="flex-shrink-0 w-[75vw] md:w-[45vw] lg:w-[30vw] py-12">
+              <StaggerItem key={project.id}>
                 <motion.div 
-                  whileHover={{ 
-                    rotateY: 20,
-                    rotateX: 15,
-                    scale: 1.1,
-                    z: 150,
-                    boxShadow: "0 70px 140px -30px rgba(0,0,0,0.6)"
-                  }}
-                  transition={{ type: "spring", stiffness: 150, damping: 15 }}
-                  className="bg-white/40 dark:bg-white/5 backdrop-blur-2xl rounded-[3rem] p-6 md:p-10 border border-white/20 dark:border-white/10 shadow-2xl group h-full flex flex-col transform-gpu preserve-3d relative"
+                  whileHover={{ y: -10 }}
+                  className="bg-white/40 dark:bg-white/5 backdrop-blur-2xl rounded-[2.5rem] p-6 border border-white/20 dark:border-white/10 shadow-xl group h-full flex flex-col relative overflow-hidden"
                 >
-                  {/* 3D Floating Tag */}
-                  <div className="absolute -top-4 -right-4 bg-[#3B82F6] text-white px-6 py-2 rounded-full font-bold text-xs shadow-xl transform translate-z-30">
+                  {/* Floating Tag */}
+                  <div className="absolute top-6 right-6 z-20 bg-blue-500 text-white px-4 py-1.5 rounded-full font-bold text-[10px] shadow-lg uppercase tracking-wider">
                     {project.tag}
                   </div>
 
-                  <div className="relative rounded-[2rem] overflow-hidden aspect-video mb-6 shadow-2xl transform translate-z-20">
+                  <div className="relative rounded-[1.5rem] overflow-hidden aspect-video mb-6 shadow-xl">
                     <motion.img 
-                      whileHover={{ scale: 1.15 }}
-                      transition={{ duration: 0.8 }}
+                      whileHover={{ scale: 1.1 }}
+                      transition={{ duration: 0.6 }}
                       src={project.image} 
                       alt={project.title} 
                       className="w-full h-full object-cover"
                       referrerPolicy="no-referrer"
                     />
-                    <div className="absolute inset-0 bg-black/30 group-hover:bg-transparent transition-colors duration-500"></div>
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500"></div>
                   </div>
                   
-                  <div className="flex-1 flex flex-col transform translate-z-10">
-                    <div className="flex items-center gap-4 mb-3">
-                      <div className="h-px w-8 bg-[#3B82F6]"></div>
-                      <span className="text-xs font-bold tracking-widest uppercase text-[#86868b] dark:text-gray-500">
-                        {String((index % projects.length) + 1).padStart(2, '0')}
-                      </span>
-                    </div>
-                    
-                    <h3 className="text-2xl md:text-3xl font-display font-bold text-[#1d1d1f] dark:text-white mb-3 tracking-tight">{project.title}</h3>
-                    <p className="text-base text-[#86868b] dark:text-gray-400 mb-6 leading-relaxed font-light line-clamp-2">{project.desc}</p>
+                  <div className="flex-1 flex flex-col">
+                    <h3 className="text-2xl font-display font-bold text-[#1d1d1f] dark:text-white mb-3 tracking-tight">{project.title}</h3>
+                    <p className="text-sm text-[#86868b] dark:text-gray-400 mb-6 leading-relaxed font-light line-clamp-3">{project.desc}</p>
                     
                     <div className="mt-auto flex flex-wrap items-center gap-3">
                       {project.link && (
-                        <a href={project.link} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white bg-[#3B82F6] px-5 py-2.5 rounded-full transition-all shadow-lg hover:shadow-cyan-500/40 hover:-translate-y-1">
+                        <a href={project.link} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white bg-[#3B82F6] px-5 py-2.5 rounded-full transition-all shadow-lg hover:shadow-blue-500/40 hover:-translate-y-1">
                           {t.projects.viewProject} <ArrowUpRight size={12} />
                         </a>
                       )}
@@ -1330,16 +1319,17 @@ const ProjectsSection = ({ settings }: { settings: any }) => {
                           <Github size={12} /> {lang === 'UZ' ? "Kod" : lang === 'RU' ? "Код" : "Code"}
                         </a>
                       )}
+                      {project.downloadUrl && (
+                        <a href={project.downloadUrl} download target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-green-600 dark:text-green-400 border border-green-600/20 dark:border-green-400/20 px-5 py-2.5 rounded-full transition-all hover:bg-green-50 dark:hover:bg-green-400/10 hover:-translate-y-1">
+                          <Download size={12} /> {lang === 'UZ' ? "Yuklab olish" : lang === 'RU' ? "Скачать" : "Download"}
+                        </a>
+                      )}
                     </div>
                   </div>
                 </motion.div>
-              </div>
+              </StaggerItem>
             ))}
           </div>
-          
-          {/* Gradient Overlays for smooth edges */}
-          <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-white dark:from-[#0a0a0a] to-transparent z-20 pointer-events-none" />
-          <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-white dark:from-[#0a0a0a] to-transparent z-20 pointer-events-none" />
         </div>
       )}
     </section>
@@ -1494,6 +1484,7 @@ const Contact = ({ settings }: { settings: any }) => {
       toast.success("Xabaringiz muvaffaqiyatli yuborildi!");
       setFormData({ name: '', email: '', message: '' });
     } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, 'messages');
       toast.error("Xatolik yuz berdi. Qaytadan urinib ko'ring.");
     } finally {
       setLoading(false);
@@ -1668,8 +1659,8 @@ export default function Portfolio() {
     });
 
     const trackVisit = async () => {
+      const today = new Date().toISOString().split('T')[0];
       try {
-        const today = new Date().toISOString().split('T')[0];
         const statRef = doc(db, 'analytics', today);
         
         const visitedKey = `visited_${today}`;
@@ -1685,6 +1676,7 @@ export default function Portfolio() {
           localStorage.setItem(visitedKey, 'true');
         }
       } catch (error: any) {
+        handleFirestoreError(error, OperationType.WRITE, `analytics/${today}`);
         console.warn("Analytics error (Permissions):", error.message);
       }
     };

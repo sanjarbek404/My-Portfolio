@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FolderKanban, Settings, LogOut, Plus, Trash2, BarChart3, Users, Eye, UploadCloud, Image as ImageIcon, X, MessageSquare, Award, Code, Briefcase, MonitorSmartphone, Server, PenTool, GraduationCap, Globe, Github, ExternalLink } from 'lucide-react';
+import { Github, LayoutDashboard, FolderKanban, Settings, LogOut, Plus, Trash2, BarChart3, Users, Eye, UploadCloud, Image as ImageIcon, X, MessageSquare, Award, Code, Briefcase, MonitorSmartphone, Server, PenTool, GraduationCap, Globe, ExternalLink } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { auth, db, isFirebaseConfigured } from '../lib/firebase';
 import { collection, addDoc, deleteDoc, doc, onSnapshot, setDoc, getDoc, updateDoc } from 'firebase/firestore';
@@ -9,31 +9,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import toast from 'react-hot-toast';
 
 const app = isFirebaseConfigured ? auth?.app : null;
-
-const uploadFileToCloudinary = async (file: File) => {
-  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
-
-  if (!cloudName || !uploadPreset) {
-    throw new Error("Cloudinary sozlamalari topilmadi! .env faylni tekshiring.");
-  }
-
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('upload_preset', uploadPreset);
-
-  const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, {
-    method: 'POST',
-    body: formData,
-  });
-
-  const data = await response.json();
-  if (data.secure_url) {
-    return data.secure_url;
-  } else {
-    throw new Error(data.error?.message || "Fayl yuklashda xatolik yuz berdi");
-  }
-};
 
 const ConfirmModal = ({ isOpen, onClose, onConfirm, title, message }: any) => {
   return (
@@ -264,6 +239,7 @@ const ProjectsManager = () => {
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isUploadingFile, setIsUploadingFile] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -332,20 +308,8 @@ const ProjectsManager = () => {
   };
 
   const handleZipChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    try {
-      setIsUploadingFile(true);
-      const toastId = toast.loading("Fayl yuklanmoqda...");
-      const fileUrl = await uploadFileToCloudinary(file);
-      setFormData({ ...formData, downloadUrl: fileUrl });
-      toast.success("Fayl muvaffaqiyatli yuklandi!", { id: toastId });
-    } catch (error: any) {
-      toast.error(error.message || "Xatolik yuz berdi");
-    } finally {
-      setIsUploadingFile(false);
-    }
+    // Removed R2 upload logic
+    toast.error("Fayl yuklash hozircha o'chirilgan. Iltimos, link kiriting.");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -360,7 +324,10 @@ const ProjectsManager = () => {
       return;
     }
 
+    if (isSaving) return;
+
     try {
+      setIsSaving(true);
       const toastId = toast.loading(editingId ? "Loyiha yangilanmoqda..." : "Loyiha saqlanmoqda...");
       
       if (editingId) {
@@ -377,6 +344,8 @@ const ProjectsManager = () => {
     } catch (error) {
       console.error("Error saving document: ", error);
       toast.error("Xatolik yuz berdi");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -458,36 +427,15 @@ const ProjectsManager = () => {
                   <input type="url" value={formData.githubUrl} onChange={e => setFormData({...formData, githubUrl: e.target.value})} className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl py-4 px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-[#1d1d1f] dark:text-white font-medium" placeholder="https://github.com/..." />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-bold text-[#1d1d1f] dark:text-gray-300 mb-2 uppercase tracking-wider">Loyiha Fayli (ZIP/RAR)</label>
+                  <label className="block text-sm font-bold text-[#1d1d1f] dark:text-gray-300 mb-2 uppercase tracking-wider">Loyiha Fayli (ZIP/RAR) - Hozircha o'chirilgan</label>
                   <div className="flex items-center gap-4">
                     <input 
-                      type="file" 
-                      ref={zipInputRef}
-                      onChange={handleZipChange}
-                      className="hidden" 
-                      accept=".zip,.rar,.7z"
+                      type="text" 
+                      value={formData.downloadUrl} 
+                      onChange={e => setFormData({...formData, downloadUrl: e.target.value})} 
+                      className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl py-4 px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-[#1d1d1f] dark:text-white font-medium" 
+                      placeholder="https://... (Ixtiyoriy)" 
                     />
-                    <button 
-                      type="button"
-                      onClick={() => zipInputRef.current?.click()}
-                      disabled={isUploadingFile}
-                      className="flex-1 flex items-center gap-2 px-6 py-4 bg-gray-50 dark:bg-white/5 border border-dashed border-gray-300 dark:border-white/20 rounded-xl text-gray-500 hover:bg-gray-100 dark:hover:bg-white/10 transition-all justify-center"
-                    >
-                      {isUploadingFile ? (
-                        <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                      ) : (
-                        <><UploadCloud size={20} /> {formData.downloadUrl ? "Fayl yuklangan" : "ZIP faylni yuklash"}</>
-                      )}
-                    </button>
-                    {formData.downloadUrl && (
-                      <button 
-                        type="button"
-                        onClick={() => setFormData({...formData, downloadUrl: ''})}
-                        className="p-4 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-colors"
-                      >
-                        <X size={20} />
-                      </button>
-                    )}
                   </div>
                   {formData.downloadUrl && (
                     <p className="text-xs text-green-500 mt-2 font-medium truncate">Fayl manzili: {formData.downloadUrl}</p>
@@ -1381,14 +1329,14 @@ const SettingsManager = () => {
   const [isUploadingResume, setIsUploadingResume] = useState(false);
   const [socials, setSocials] = useState({ 
     github: '', linkedin: '', telegram: '', instagram: '', resume: '', email: '',
-    aboutTitle: 'Men haqimda', 
-    aboutShort: 'Dasturlash men uchun shunchaki kod yozish jarayoni emas. Bu — insonlar duch keladigan muammolarni tushunish, ularga qulay va samarali yechimlar topish hamda hayotini yengillashtiradigan vositalar yaratishdir. Har bir yozilgan kod ortida insonlarga foyda keltirish, vaqtini tejash va ishlarini osonlashtirish maqsadi yotadi. Men dasturlashni nafaqat texnik ko‘nikma, balki ijodkorlik va mantiqiy fikrlashni birlashtiradigan soha deb bilaman', 
+    aboutTitle: 'Sodda. Kreativ. Samarali.', 
+    aboutShort: 'Dasturlash men uchun shunchaki kod yozish emas, balki insonlar hayotini yengillashtiruvchi vositalar yaratishdir.', 
     aboutFull: 'Dasturlash men uchun shunchaki kod yozish emas, balki insonlar hayotini yengillashtiruvchi vositalar yaratishdir. Har bir loyihada minimalizm va yuqori unumdorlikni birinchi o\'ringa qo\'yaman.\n\nMening maqsadim - foydalanuvchi interfeyslarini shunchalik sodda qilishki, hatto birinchi marta kirgan odam ham o\'zini uydagidek his qilsin. Murakkab muammolarga kreativ yechimlar topish mening asosiy kuchimdir.', 
-    expYears: '1+', 
-    githubCommits: '110+', 
+    expYears: '3+', 
+    githubCommits: '1.2k', 
     githubYearText: 'Bu yilgi faollik',
-    spotifySong: 'Lofi Programming Playist', 
-    spotifyArtist: 'Calm Radio'
+    spotifySong: 'Lofi Hip Hop Radio', 
+    spotifyArtist: 'ChilledCow'
   });
   const [isSavingSocials, setIsSavingSocials] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -1470,20 +1418,8 @@ const SettingsManager = () => {
   };
 
   const handleResumeChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    try {
-      setIsUploadingResume(true);
-      const toastId = toast.loading("Rezyume yuklanmoqda...");
-      const fileUrl = await uploadFileToCloudinary(file);
-      setSocials({ ...socials, resume: fileUrl });
-      toast.success("Rezyume muvaffaqiyatli yuklandi!", { id: toastId });
-    } catch (error: any) {
-      toast.error(error.message || "Xatolik yuz berdi");
-    } finally {
-      setIsUploadingResume(false);
-    }
+    // Removed R2 upload logic
+    toast.error("Fayl yuklash hozircha o'chirilgan. Iltimos, link kiriting.");
   };
 
   const handleSaveSocials = async (e: React.FormEvent) => {
@@ -1522,6 +1458,24 @@ const SettingsManager = () => {
             <h3 className="text-2xl font-bold text-[#1d1d1f] dark:text-white">Hero Rasmi</h3>
             <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Bosh sahifadagi asosiy rasm (ixtiyoriy)</p>
           </div>
+        </div>
+
+        <div className="mb-8 max-w-2xl">
+          <label className="block text-sm font-bold text-[#1d1d1f] dark:text-gray-300 mb-2 uppercase tracking-wider">Rasm URL manzili (Link yoki /public papkadan)</label>
+          <input 
+            type="text" 
+            value={heroImage} 
+            onChange={async (e) => {
+              const val = e.target.value;
+              setHeroImage(val);
+              if (isFirebaseConfigured && db) {
+                await setDoc(doc(db, 'settings', 'hero'), { image: val }, { merge: true });
+              }
+            }} 
+            className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl py-4 px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-[#1d1d1f] dark:text-white font-medium" 
+            placeholder="https://... yoki /me.jpg" 
+          />
+          <p className="text-sm text-gray-500 mt-2">Siz to'g'ridan-to'g'ri rasm linkini kiritishingiz yoki public papkadagi rasm nomini (masalan: /me.jpg) yozishingiz mumkin.</p>
         </div>
 
         <div 
@@ -1608,31 +1562,16 @@ const SettingsManager = () => {
               <input type="email" value={socials.email} onChange={e => setSocials({...socials, email: e.target.value})} className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl py-4 px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-[#1d1d1f] dark:text-white font-medium" placeholder="hello@misol.uz" />
             </div>
             <div>
-              <label className="block text-sm font-bold text-[#1d1d1f] dark:text-gray-300 mb-2 uppercase tracking-wider">Rezyume (PDF/DOCX)</label>
+              <label className="block text-sm font-bold text-[#1d1d1f] dark:text-gray-300 mb-2 uppercase tracking-wider">Rezyume Linki (URL)</label>
               <div className="flex items-center gap-4">
                 <input 
-                  type="file" 
-                  ref={resumeInputRef}
-                  onChange={handleResumeChange}
-                  className="hidden" 
-                  accept=".pdf,.doc,.docx"
+                  type="text" 
+                  value={socials.resume} 
+                  onChange={e => setSocials({...socials, resume: e.target.value})} 
+                  className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl py-4 px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-[#1d1d1f] dark:text-white font-medium" 
+                  placeholder="https://... (Ixtiyoriy)" 
                 />
-                <button 
-                  type="button"
-                  onClick={() => resumeInputRef.current?.click()}
-                  disabled={isUploadingResume}
-                  className="flex-1 flex items-center gap-2 px-6 py-4 bg-gray-50 dark:bg-white/5 border border-dashed border-gray-300 dark:border-white/20 rounded-xl text-gray-500 hover:bg-gray-100 dark:hover:bg-white/10 transition-all justify-center"
-                >
-                  {isUploadingResume ? (
-                    <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                  ) : (
-                    <><UploadCloud size={20} /> {socials.resume ? "Rezyume yuklangan" : "Faylni yuklash"}</>
-                  )}
-                </button>
               </div>
-              {socials.resume && (
-                <p className="text-xs text-green-500 mt-2 font-medium truncate">Fayl: {socials.resume}</p>
-              )}
             </div>
             <div>
               <label className="block text-sm font-bold text-[#1d1d1f] dark:text-gray-300 mb-2 uppercase tracking-wider">GitHub</label>

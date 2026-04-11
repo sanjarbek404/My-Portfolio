@@ -1,114 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, AnimatePresence, useInView, useTransform, useMotionTemplate, useMotionValue } from 'motion/react';
-import { Github, Linkedin, Mail, ArrowRight, Code, Globe, Zap, Layers, Moon, Sun, Award, ExternalLink, Briefcase, MonitorSmartphone, Server, PenTool, GraduationCap, Lock, FileText, Terminal, Coffee, Users, User, Star, ArrowUpRight, Send, Instagram, Copy, Check, Download, Cpu, Braces, X, Palette, Database, Music, Heart, ThumbsUp, Flame, Rocket } from 'lucide-react';
+import { Github, Linkedin, Instagram, Mail, ArrowRight, Code, Globe, Zap, Layers, Moon, Sun, Award, ExternalLink, Briefcase, MonitorSmartphone, Server, PenTool, GraduationCap, Lock, FileText, Terminal, Coffee, Users, User, Star, ArrowUpRight, Send, Copy, Check, Download, Cpu, Braces, X, Palette, Database, Music, Heart, ThumbsUp, Flame, Rocket } from 'lucide-react';
 import { db, isFirebaseConfigured, handleFirestoreError, OperationType } from '../lib/firebase';
 import { collection, onSnapshot, doc, setDoc, increment, addDoc } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useLanguage } from '../lib/LanguageContext';
 
-const InitialLoader = ({ onComplete }: { onComplete: () => void }) => {
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setTimeout(onComplete, 500);
-          return 100;
-        }
-        return prev + 1;
-      });
-    }, 20);
-    return () => clearInterval(interval);
-  }, [onComplete]);
-
-  return (
-    <motion.div
-      initial={{ opacity: 1 }}
-      exit={{ 
-        y: "-100%",
-        transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] }
-      }}
-      className="fixed inset-0 z-[999] bg-[#0a0a0a] flex flex-col items-center justify-center overflow-hidden"
-    >
-      <div className="relative z-10 flex flex-col items-center">
-        <div className="overflow-hidden mb-4">
-          <motion.div
-            initial={{ y: 100 }}
-            animate={{ y: 0 }}
-            transition={{ duration: 1, ease: [0.76, 0, 0.24, 1] }}
-            className="flex gap-2 md:gap-4"
-          >
-            <span className="text-4xl md:text-7xl font-display font-bold text-white tracking-tighter uppercase">
-              Sanjarbek
-            </span>
-            <span className="text-4xl md:text-7xl font-display font-bold text-white/30 tracking-tighter uppercase">
-              Otabekov
-            </span>
-          </motion.div>
-        </div>
-        
-        <div className="w-64 h-[1px] bg-white/10 relative overflow-hidden rounded-full">
-          <motion.div 
-            className="absolute top-0 left-0 h-full bg-white"
-            initial={{ width: 0 }}
-            animate={{ width: `${progress}%` }}
-            transition={{ ease: "linear" }}
-          />
-        </div>
-        
-        <motion.span 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="mt-4 text-white/50 font-mono text-sm tracking-widest"
-        >
-          {progress}%
-        </motion.span>
-      </div>
-
-      {/* Decorative background elements */}
-      <motion.div 
-        animate={{ 
-          scale: [1, 1.2, 1],
-          opacity: [0.3, 0.5, 0.3],
-        }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-500/20 blur-[120px] rounded-full pointer-events-none"
-      />
-    </motion.div>
-  );
-};
-
-const Magnetic = ({ children, strength = 0.5 }: { children: React.ReactNode, strength?: number }) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!ref.current) return;
-    const { clientX, clientY } = e;
-    const { left, top, width, height } = ref.current.getBoundingClientRect();
-    const x = (clientX - (left + width / 2)) * strength;
-    const y = (clientY - (top + height / 2)) * strength;
-    setPosition({ x, y });
-  };
-
-  const handleMouseLeave = () => {
-    setPosition({ x: 0, y: 0 });
-  };
-
-  return (
-    <motion.div
-      ref={ref}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      animate={{ x: position.x, y: position.y }}
-      transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
-    >
-      {children}
-    </motion.div>
-  );
+const Magnetic = ({ children, className = "" }: { children: React.ReactNode, strength?: number, className?: string }) => {
+  return <div className={className}>{children}</div>;
 };
 
 const StaggerContainer = ({ children, delay = 0, className = "" }: { children: React.ReactNode, delay?: number, className?: string }) => {
@@ -139,7 +39,7 @@ const StaggerItem = ({ children, className = "" }: { children: React.ReactNode, 
     <motion.div
       variants={{
         hidden: { opacity: 0, y: 20 },
-        show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } },
+        show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
       }}
       className={className}
     >
@@ -148,7 +48,59 @@ const StaggerItem = ({ children, className = "" }: { children: React.ReactNode, 
   );
 };
 
+const WordReveal = ({ text, className = "" }: { text: string, className?: string }) => {
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5 }}
+      className={className}
+    >
+      {text}
+    </motion.div>
+  );
+};
 
+const ScrollProgress = () => {
+  const { scrollYProgress } = useScroll();
+  return (
+    <motion.div 
+      className="fixed top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-500 via-[#3B82F6] to-purple-500 origin-left z-[100] shadow-[0_0_10px_rgba(59,130,246,0.5)]"
+      style={{ scaleX: scrollYProgress }}
+    />
+  );
+};
+
+const TextReveal = ({ children, className, delay = 0 }: { children: React.ReactNode, className?: string, delay?: number }) => {
+  return (
+    <div className="overflow-hidden">
+      <motion.div
+        initial={{ y: "100%" }}
+        whileInView={{ y: 0 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.5, ease: "easeOut", delay }}
+        className={className}
+      >
+        {children}
+      </motion.div>
+    </div>
+  );
+};
+
+const Typewriter = ({ text, delay = 0, className = "" }: { text: string, delay?: number, className?: string }) => {
+  return (
+    <motion.span 
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay }}
+      className={className}
+    >
+      {text}
+    </motion.span>
+  );
+};
 
 const ReactionsWidget = () => {
   const [reactions, setReactions] = useState({ like: 0, heart: 0, fire: 0, rocket: 0 });
@@ -182,8 +134,8 @@ const ReactionsWidget = () => {
     <motion.div 
       initial={{ opacity: 0, y: 50, scale: 0.8 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ delay: 2, type: "spring" }}
-      className="fixed bottom-8 left-8 z-50 flex flex-col gap-2 bg-white/40 dark:bg-[#111]/40 backdrop-blur-2xl p-2 rounded-full border border-black/10 dark:border-white/10 shadow-2xl"
+      transition={{ delay: 1, type: "spring" }}
+      className="fixed bottom-8 left-8 z-50 flex flex-col gap-2 bg-white/40 dark:bg-[#111]/40 backdrop-blur-md p-2 rounded-full border border-black/10 dark:border-white/10 shadow-2xl"
     >
       {[
         { type: 'like', icon: <ThumbsUp size={18} />, count: reactions.like, color: "text-blue-500" },
@@ -207,132 +159,12 @@ const ReactionsWidget = () => {
   );
 };
 
-const WordReveal = ({ text, className = "" }: { text: string, className?: string }) => {
-  const words = text.split(" ");
-  
-  return (
-    <motion.div 
-      initial="hidden"
-      whileInView="show"
-      viewport={{ once: true, margin: "-50px" }}
-      variants={{
-        show: {
-          transition: { staggerChildren: 0.03 }
-        }
-      }}
-      className={`flex flex-wrap gap-x-1.5 ${className}`}
-    >
-      {words.map((word, i) => (
-        <motion.span
-          key={i}
-          variants={{
-            hidden: { opacity: 0, y: 15, filter: "blur(8px)" },
-            show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
-          }}
-          className="inline-block"
-        >
-          {word}
-        </motion.span>
-      ))}
-    </motion.div>
-  );
-};
-
-const ScrollProgress = () => {
-  const { scrollYProgress } = useScroll();
-  return (
-    <motion.div 
-      className="fixed top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-500 via-[#3B82F6] to-purple-500 origin-left z-[100] shadow-[0_0_10px_rgba(59,130,246,0.5)]"
-      style={{ scaleX: scrollYProgress }}
-    />
-  );
-};
-
-
-
-
-const TextReveal = ({ children, className, delay = 0 }: { children: React.ReactNode, className?: string, delay?: number }) => {
-  return (
-    <div className="overflow-hidden">
-      <motion.div
-        initial={{ y: "100%" }}
-        whileInView={{ y: 0 }}
-        viewport={{ once: true, margin: "-50px" }}
-        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay }}
-        className={className}
-      >
-        {children}
-      </motion.div>
-    </div>
-  );
-};
-
-const Typewriter = ({ text, delay = 0, className = "" }: { text: string, delay?: number, className?: string }) => {
-  const characters = text.split("");
-  
-  return (
-    <motion.span 
-      initial="hidden"
-      whileInView="show"
-      viewport={{ once: true }}
-      variants={{
-        show: {
-          transition: {
-            staggerChildren: 0.02,
-            delayChildren: delay
-          }
-        }
-      }}
-      className={className}
-    >
-      {characters.map((char, index) => (
-        <motion.span
-          key={index}
-          variants={{
-            hidden: { opacity: 0 },
-            show: { opacity: 1 }
-          }}
-          className="inline-block"
-        >
-          {char === " " ? "\u00A0" : char}
-        </motion.span>
-      ))}
-    </motion.span>
-  );
-};
-
 const BackgroundAnimation = () => {
   return (
     <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
-      <motion.div 
-        animate={{ 
-          x: [0, 150, 0],
-          y: [0, 100, 0],
-          scale: [1, 1.5, 1],
-          rotate: [0, 90, 0],
-        }}
-        transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-        className="absolute top-[-20%] left-[-20%] w-[70%] h-[70%] rounded-full bg-blue-500/10 blur-[150px] dark:bg-blue-600/5"
-      />
-      <motion.div 
-        animate={{ 
-          x: [0, -120, 0],
-          y: [0, 150, 0],
-          scale: [1, 1.4, 1],
-          rotate: [0, -45, 0],
-        }}
-        transition={{ duration: 35, repeat: Infinity, ease: "linear" }}
-        className="absolute bottom-[-20%] right-[-20%] w-[70%] h-[70%] rounded-full bg-[#3B82F6]/10 blur-[150px] dark:bg-[#3B82F6]/5"
-      />
-      <motion.div 
-        animate={{ 
-          x: [0, 50, 0],
-          y: [0, -100, 0],
-          scale: [0.8, 1.2, 0.8],
-        }}
-        transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-        className="absolute top-[30%] left-[30%] w-[40%] h-[40%] rounded-full bg-purple-500/10 blur-[120px] dark:bg-purple-600/5"
-      />
+      <div className="absolute top-[-20%] left-[-20%] w-[70%] h-[70%] rounded-full bg-blue-500/10 blur-[100px] dark:bg-blue-600/5" />
+      <div className="absolute bottom-[-20%] right-[-20%] w-[70%] h-[70%] rounded-full bg-[#3B82F6]/10 blur-[100px] dark:bg-[#3B82F6]/5" />
+      <div className="absolute top-[30%] left-[30%] w-[40%] h-[40%] rounded-full bg-purple-500/10 blur-[100px] dark:bg-purple-600/5" />
     </div>
   );
 };
@@ -342,10 +174,10 @@ const ThemeTransition = ({ isDark, trigger }: { isDark: boolean, trigger: boolea
     <AnimatePresence mode="wait">
       {trigger && (
         <motion.div
-          initial={{ clipPath: 'circle(0% at 50% 50%)' }}
-          animate={{ clipPath: 'circle(150% at 50% 50%)' }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
           className={`fixed inset-0 z-[100] pointer-events-none ${isDark ? 'bg-[#0a0a0a]' : 'bg-white'}`}
         />
       )}
@@ -369,7 +201,7 @@ const FloatingNav = ({ isDark, toggleDark }: { isDark: boolean, toggleDark: () =
     setThemeTrigger(true);
     setTimeout(() => {
       toggleDark();
-      setTimeout(() => setThemeTrigger(false), 800);
+      setTimeout(() => setThemeTrigger(false), 500);
     }, 50);
   };
 
@@ -380,17 +212,16 @@ const FloatingNav = ({ isDark, toggleDark }: { isDark: boolean, toggleDark: () =
       <ThemeTransition isDark={isDark} trigger={themeTrigger} />
       <div className="fixed inset-0 z-[-1] transition-colors duration-500 overflow-hidden">
         <div className="absolute inset-0 bg-dot-pattern [mask-image:radial-gradient(ellipse_at_center,black,transparent_80%)]"></div>
-        <div className="absolute inset-0 bg-noise pointer-events-none"></div>
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-[#3B82F6]/10 blur-[120px] pointer-events-none animate-pulse"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-blue-500/10 blur-[120px] pointer-events-none animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-[#3B82F6]/10 blur-[100px] pointer-events-none"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-blue-500/10 blur-[100px] pointer-events-none"></div>
       </div>
       <motion.nav 
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className={`fixed top-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 w-[90%] md:w-auto`}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className={`fixed top-4 md:top-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 w-[95%] md:w-auto`}
       >
-        <div className={`flex justify-between items-center gap-4 md:gap-8 transition-all duration-500 bg-white/40 dark:bg-black/40 backdrop-blur-2xl px-6 py-3 rounded-full border border-white/20 dark:border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.1)]`}>
+        <div className={`flex justify-between items-center gap-4 md:gap-8 transition-all duration-500 bg-white/60 dark:bg-black/60 backdrop-blur-md px-4 md:px-6 py-3 rounded-full border border-white/20 dark:border-white/10 shadow-lg`}>
           
             <a href="#" className="text-lg font-bold tracking-tighter text-[#1d1d1f] dark:text-white flex items-center justify-center w-10 h-10">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#1d1d1f] dark:text-white">
@@ -560,7 +391,7 @@ const Hero = ({ settings }: { settings: any }) => {
               </StaggerItem>
 
               <StaggerItem>
-                <h1 className="text-[14vw] md:text-[10vw] lg:text-[7vw] leading-[0.85] font-display font-bold tracking-tighter uppercase text-[#1d1d1f] dark:text-white mb-6">
+                <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-[5.5rem] xl:text-[7rem] leading-[0.85] font-display font-bold tracking-tighter uppercase text-[#1d1d1f] dark:text-white mb-6">
                   <Typewriter text="Sanjarbek" delay={0.6} /> <br/> 
                   <Typewriter text="Otabekov." delay={0.9} className="text-transparent bg-clip-text bg-gradient-to-r from-[#3B82F6] via-blue-400 to-cyan-400" />
                 </h1>
@@ -625,12 +456,12 @@ const Hero = ({ settings }: { settings: any }) => {
 
           <motion.div
             style={{ y: y2 }}
-            initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
-            animate={{ opacity: 1, scale: 1, rotate: 0 }}
-            transition={{ duration: 1.2, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="flex-shrink-0 relative w-64 h-64 md:w-80 md:h-80 lg:w-[450px] lg:h-[450px] mt-12 lg:mt-0"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+            className="flex-shrink-0 relative w-64 h-64 md:w-80 md:h-80 lg:w-[380px] lg:h-[380px] xl:w-[450px] xl:h-[450px] mt-12 lg:mt-0"
           >
-            <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/40 to-cyan-400/40 rounded-full blur-[80px] animate-pulse"></div>
+            <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/40 to-cyan-400/40 rounded-full blur-[80px]"></div>
             
             {/* Main Image Card */}
             <div className="relative w-full h-full rounded-[3rem] overflow-hidden border border-white/20 dark:border-white/10 shadow-2xl backdrop-blur-sm bg-white/5 p-2">
@@ -640,7 +471,9 @@ const Hero = ({ settings }: { settings: any }) => {
                     src={heroImage} 
                     alt="Sanjarbek Otabekov" 
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      console.error('Image failed to load:', heroImage);
+                    }}
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-500/20 to-purple-500/20">
@@ -650,31 +483,6 @@ const Hero = ({ settings }: { settings: any }) => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               </div>
             </div>
-
-            {/* Floating Programming Icons */}
-            <motion.div 
-              animate={{ y: [0, -20, 0], rotate: [0, 15, 0] }}
-              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -top-6 -left-6 z-20 bg-white/40 dark:bg-white/10 backdrop-blur-2xl p-5 rounded-[2rem] border border-white/40 shadow-2xl"
-            >
-              <Code className="text-blue-500 drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]" size={36} />
-            </motion.div>
-
-            <motion.div 
-              animate={{ y: [0, 20, 0], rotate: [0, -15, 0] }}
-              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-              className="absolute -bottom-6 -right-6 z-20 bg-white/40 dark:bg-white/10 backdrop-blur-2xl p-5 rounded-[2rem] border border-white/40 shadow-2xl"
-            >
-              <Terminal className="text-cyan-500 drop-shadow-[0_0_8px_rgba(6,182,212,0.5)]" size={36} />
-            </motion.div>
-
-            <motion.div 
-              animate={{ x: [0, 15, 0], y: [0, 15, 0] }}
-              transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-              className="absolute top-1/2 -right-8 z-20 bg-white/40 dark:bg-white/10 backdrop-blur-2xl p-4 rounded-2xl border border-white/40 shadow-2xl"
-            >
-              <Cpu className="text-purple-500" size={24} />
-            </motion.div>
           </motion.div>
         </div>
       </div>
@@ -766,15 +574,7 @@ const ScrollToTop = () => {
 };
 
 const BentoCard = ({ children, className, delay = 0, title, fullContent }: { children: React.ReactNode, className?: string, delay?: number, title?: string, fullContent?: React.ReactNode }) => {
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
   const [isExpanded, setIsExpanded] = useState(false);
-
-  function handleMouseMove({ currentTarget, clientX, clientY }: React.MouseEvent) {
-    const { left, top } = currentTarget.getBoundingClientRect();
-    mouseX.set(clientX - left);
-    mouseY.set(clientY - top);
-  }
 
   return (
     <>
@@ -782,22 +582,10 @@ const BentoCard = ({ children, className, delay = 0, title, fullContent }: { chi
         <motion.div 
           layoutId={`card-${title}`}
           onClick={() => fullContent && setIsExpanded(true)}
-          onMouseMove={handleMouseMove}
-          whileHover={{ y: -5, scale: 1.01 }}
-          className={`h-full bg-white/40 dark:bg-white/5 backdrop-blur-2xl rounded-[2.5rem] p-8 flex flex-col justify-between group transition-all duration-500 border border-white/20 dark:border-white/10 relative overflow-hidden shadow-[0_8px_32px_0_rgba(0,0,0,0.05)] hover:shadow-[0_8px_32px_0_rgba(59,130,246,0.15)] hover:border-blue-500/30 ${fullContent ? 'cursor-pointer' : ''}`}
+          whileHover={{ y: -5 }}
+          className={`h-full bg-white/60 dark:bg-white/5 backdrop-blur-md rounded-[2.5rem] p-6 md:p-8 flex flex-col justify-between group transition-all duration-300 border border-white/20 dark:border-white/10 relative overflow-hidden shadow-sm hover:shadow-md hover:border-blue-500/30 ${fullContent ? 'cursor-pointer' : ''}`}
         >
-          <motion.div
-            className="pointer-events-none absolute -inset-px rounded-[2.5rem] opacity-0 transition duration-300 group-hover:opacity-100"
-            style={{
-              background: useMotionTemplate`
-                radial-gradient(
-                  650px circle at ${mouseX}px ${mouseY}px,
-                  rgba(59, 130, 246, 0.1),
-                  transparent 80%
-                )
-              `,
-            }}
-          />
+          <div className="pointer-events-none absolute -inset-px rounded-[2.5rem] opacity-0 transition duration-300 group-hover:opacity-100 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.1),transparent_80%)]" />
           {children}
           {fullContent && (
             <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -811,21 +599,21 @@ const BentoCard = ({ children, className, delay = 0, title, fullContent }: { chi
 
       <AnimatePresence>
         {isExpanded && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 perspective-2000">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6">
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsExpanded(false)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-md"
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             />
             <motion.div 
               layoutId={`card-${title}`}
-              initial={{ rotateY: 90, opacity: 0, scale: 0.8 }}
-              animate={{ rotateY: 0, opacity: 1, scale: 1 }}
-              exit={{ rotateY: -90, opacity: 0, scale: 0.8 }}
-              transition={{ type: "spring", stiffness: 200, damping: 20 }}
-              className="relative w-full max-w-2xl bg-white dark:bg-[#111] rounded-[3rem] p-10 shadow-2xl border border-white/10 overflow-hidden preserve-3d"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              className="relative w-full max-w-2xl bg-white dark:bg-[#111] rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 shadow-2xl border border-white/10 overflow-hidden"
             >
               <button 
                 onClick={() => setIsExpanded(false)}
@@ -921,7 +709,7 @@ const BentoGrid = ({ settings }: { settings: any }) => {
                   <Zap size={20} />
                 </div>
                 <div>
-                  <p className="text-6xl font-display font-bold tracking-tighter mb-2">{settings?.expYears || "1+"}</p>
+                  <p className="text-6xl font-display font-bold tracking-tighter mb-2">{settings?.expYears || "3+"}</p>
                   <p className="opacity-80 font-medium tracking-widest uppercase text-sm">Yillik tajriba</p>
                 </div>
               </div>
@@ -1001,7 +789,7 @@ const BentoGrid = ({ settings }: { settings: any }) => {
               </div>
               <div>
                 <p className="text-sm text-[#86868b] dark:text-gray-400 font-medium tracking-widest uppercase mb-2">{t.bento.listening}</p>
-                <p className="text-xl font-bold text-[#1d1d1f] dark:text-white tracking-tight line-clamp-1">{settings?.spotifySong || "Lofi Hip Hop Radio"}</p>
+                <p className="text-xl font-bold text-[#1d1d1f] dark:text-white tracking-tight line-clamp-1">{settings?.spotifySong || "Lofi  Coding music"}</p>
                 <p className="text-sm text-[#86868b] dark:text-gray-400 mt-1">{settings?.spotifyArtist || "ChilledCow"}</p>
               </div>
             </div>
@@ -1067,13 +855,10 @@ const SkillsAndCerts = () => {
               <StaggerItem key={skill.id}>
                 <motion.div 
                   whileHover={{ 
-                    y: -10, 
-                    scale: 1.05,
-                    rotateY: 10,
-                    rotateX: -5,
-                    z: 50
+                    y: -5, 
+                    scale: 1.02
                   }}
-                  className="bg-white/80 dark:bg-[#111]/80 backdrop-blur-md p-6 rounded-3xl border border-black/5 dark:border-white/5 shadow-sm flex flex-col items-center justify-center gap-4 aspect-square transition-all duration-300 hover:shadow-2xl hover:border-cyan-500/20 group transform-gpu preserve-3d"
+                  className="bg-white/80 dark:bg-[#111]/80 backdrop-blur-sm p-4 md:p-6 rounded-3xl border border-black/5 dark:border-white/5 shadow-sm flex flex-col items-center justify-center gap-3 md:gap-4 aspect-square transition-all duration-300 hover:shadow-md hover:border-cyan-500/20 group"
                 >
                   <div className="p-4 rounded-2xl bg-black/5 dark:bg-white/5 group-hover:bg-cyan-500/10 transition-colors transform translate-z-10">
                     {getSkillIcon(skill.name)}
@@ -1284,8 +1069,8 @@ const ProjectsSection = ({ settings }: { settings: any }) => {
             {displayProjects.map((project, index) => (
               <StaggerItem key={project.id}>
                 <motion.div 
-                  whileHover={{ y: -10 }}
-                  className="bg-white/40 dark:bg-white/5 backdrop-blur-2xl rounded-[2.5rem] p-6 border border-white/20 dark:border-white/10 shadow-xl group h-full flex flex-col relative overflow-hidden"
+                  whileHover={{ y: -5 }}
+                  className="bg-white/60 dark:bg-white/5 backdrop-blur-md rounded-[2rem] md:rounded-[2.5rem] p-5 md:p-6 border border-white/20 dark:border-white/10 shadow-md group h-full flex flex-col relative overflow-hidden"
                 >
                   {/* Floating Tag */}
                   <div className="absolute top-6 right-6 z-20 bg-blue-500 text-white px-4 py-1.5 rounded-full font-bold text-[10px] shadow-lg uppercase tracking-wider">
@@ -1319,11 +1104,6 @@ const ProjectsSection = ({ settings }: { settings: any }) => {
                           <Github size={12} /> {lang === 'UZ' ? "Kod" : lang === 'RU' ? "Код" : "Code"}
                         </a>
                       )}
-                      {project.downloadUrl && (
-                        <a href={project.downloadUrl} download target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-green-600 dark:text-green-400 border border-green-600/20 dark:border-green-400/20 px-5 py-2.5 rounded-full transition-all hover:bg-green-50 dark:hover:bg-green-400/10 hover:-translate-y-1">
-                          <Download size={12} /> {lang === 'UZ' ? "Yuklab olish" : lang === 'RU' ? "Скачать" : "Download"}
-                        </a>
-                      )}
                     </div>
                   </div>
                 </motion.div>
@@ -1332,48 +1112,6 @@ const ProjectsSection = ({ settings }: { settings: any }) => {
           </div>
         </div>
       )}
-    </section>
-  );
-};
-
-const TestimonialsSection = () => {
-  const { t } = useLanguage();
-  return (
-    <section className="py-32 px-6 md:px-12">
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-16">
-          <TextReveal>
-            <h2 className="text-4xl md:text-6xl font-display font-bold tracking-tighter text-[#1d1d1f] dark:text-white uppercase mb-4">
-              <Typewriter text={t.testimonials.title} />
-            </h2>
-          </TextReveal>
-          <p className="text-xl text-[#86868b] dark:text-gray-400 max-w-2xl font-light">{t.testimonials.subtitle}</p>
-        </div>
-          <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {t.testimonials.items.map((item: any, i: number) => (
-             <StaggerItem key={i}>
-               <motion.div 
-                whileHover={{ y: -10 }}
-                className="h-full bg-white/80 dark:bg-[#111]/80 backdrop-blur-md p-10 rounded-[2rem] border border-black/5 dark:border-white/5 transition-all duration-500 shadow-sm hover:shadow-xl"
-              >
-                <div className="flex gap-1 text-yellow-400 mb-8">
-                  {[...Array(5)].map((_, i) => <Star key={i} size={20} fill="currentColor" />)}
-                </div>
-                <p className="text-[#1d1d1f] dark:text-gray-300 text-lg mb-10 italic font-light leading-relaxed">"{item.text}"</p>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-800 flex items-center justify-center text-xl font-bold text-gray-500 dark:text-gray-400">
-                    {item.name.charAt(0)}
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-[#1d1d1f] dark:text-white tracking-tight">{item.name}</h4>
-                    <p className="text-sm text-[#86868b] dark:text-gray-400">{item.role}</p>
-                  </div>
-                </div>
-              </motion.div>
-            </StaggerItem>
-          ))}
-        </StaggerContainer>
-      </div>
     </section>
   );
 };
@@ -1607,22 +1345,19 @@ const Footer = ({ settings }: { settings: any }) => {
 const SectionWrapper = ({ children, className = "" }: { children: React.ReactNode, className?: string }) => {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 50, rotateX: 10, scale: 0.95 }}
-      whileInView={{ opacity: 1, y: 0, rotateX: 0, scale: 1 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      className={`perspective-2000 ${className}`}
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className={className}
     >
-      <div className="preserve-3d">
-        {children}
-      </div>
+      {children}
     </motion.div>
   );
 };
 
 export default function Portfolio() {
   const [isDark, setIsDark] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [settings, setSettings] = useState<any>(null);
 
   useEffect(() => {
@@ -1687,54 +1422,45 @@ export default function Portfolio() {
 
   return (
     <div className="bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-[#0a0a0a] dark:to-black min-h-screen font-sans selection:bg-blue-500 selection:text-white transition-colors duration-300 relative overflow-x-hidden">
+      <ScrollProgress />
       <BackgroundAnimation />
-      <div className="fixed inset-0 opacity-[0.05] dark:opacity-[0.03] pointer-events-none z-50 mix-blend-overlay" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }}></div>
       
-      <AnimatePresence mode="wait">
-        {loading && <InitialLoader onComplete={() => setLoading(false)} />}
-      </AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <ReactionsWidget />
+        <ScrollToTop />
+        <FloatingNav isDark={isDark} toggleDark={toggleDark} />
+        <main className="relative z-10">
+          <Hero settings={settings} />
+          <Marquee />
+          <SectionWrapper>
+            <BentoGrid settings={settings} />
+          </SectionWrapper>
+          <SectionWrapper>
+            <ServicesSection />
+          </SectionWrapper>
+          <SectionWrapper>
+            <SkillsAndCerts />
+          </SectionWrapper>
+          <SectionWrapper>
+            <ProjectsSection settings={settings} />
+          </SectionWrapper>
+          <SectionWrapper>
+            <WorkflowSection />
+          </SectionWrapper>
 
-      {!loading && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
-        >
-          <ReactionsWidget />
-          <ScrollProgress />
-          <ScrollToTop />
-          <FloatingNav isDark={isDark} toggleDark={toggleDark} />
-          <main className="relative z-10">
-            <Hero settings={settings} />
-            <Marquee />
-            <SectionWrapper>
-              <BentoGrid settings={settings} />
-            </SectionWrapper>
-            <SectionWrapper>
-              <ServicesSection />
-            </SectionWrapper>
-            <SectionWrapper>
-              <SkillsAndCerts />
-            </SectionWrapper>
-            <SectionWrapper>
-              <ProjectsSection settings={settings} />
-            </SectionWrapper>
-            <SectionWrapper>
-              <WorkflowSection />
-            </SectionWrapper>
-            <SectionWrapper>
-              <TestimonialsSection />
-            </SectionWrapper>
-            <SectionWrapper>
-              <ExperienceEducation />
-            </SectionWrapper>
-            <SectionWrapper>
-              <Contact settings={settings} />
-            </SectionWrapper>
-          </main>
-          <Footer settings={settings} />
-        </motion.div>
-      )}
+          <SectionWrapper>
+            <ExperienceEducation />
+          </SectionWrapper>
+          <SectionWrapper>
+            <Contact settings={settings} />
+          </SectionWrapper>
+        </main>
+        <Footer settings={settings} />
+      </motion.div>
     </div>
   );
 }

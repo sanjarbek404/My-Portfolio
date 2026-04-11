@@ -9,7 +9,7 @@ service cloud.firestore {
     function isAdmin() {
       return isAuthenticated() && 
         (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' || 
-         request.auth.token.email == "sanjarbekotabekov010@gmail.com");
+         request.auth.token.email == "sanjarbektest111@gmail.com");
     }
 
     // Publicly readable collections
@@ -56,8 +56,8 @@ service cloud.firestore {
 
     // Analytics and Stats (Publicly writable)
     match /analytics/{date} {
-      allow read: if isAdmin();
-      allow create, update: if true;
+      allow get, create, update: if true;
+      allow list: if isAdmin();
     }
     
     match /stats/reactions {

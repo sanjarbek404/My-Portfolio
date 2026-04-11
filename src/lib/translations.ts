@@ -90,14 +90,6 @@ export const translations = {
       step3: { title: "Dasturlash", desc: "Tasdiqlangan dizayn asosida frontend va backend qismlarini kodlash, ma'lumotlar bazasini ulash." },
       step4: { title: "Testlash va Ishga tushirish", desc: "Barcha funksiyalarni tekshirish, xatoliklarni to'g'rilash va loyihani ommaga taqdim etish." }
     },
-    testimonials: {
-      title: "Mijozlar Fikri",
-      subtitle: "Men bilan ishlagan insonlar nima deydi?",
-      items: [
-        
-        { name: "Mijoz", role: "Mebel Do`koni", text: "Sanjarbek bizning saytimizni ajoyib va sifatli tarzda ishlab chiqdi" }
-      ]
-    },
     footer: {
       rights: "Barcha huquqlar himoyalangan."
     }
@@ -192,15 +184,6 @@ export const translations = {
       step3: { title: "Программирование", desc: "Кодирование фронтенд и бэкенд частей на основе утвержденного дизайна, подключение базы данных." },
       step4: { title: "Тестирование и запуск", desc: "Проверка всех функций, исправление ошибок и презентация проекта публике." }
     },
-    testimonials: {
-      title: "Отзывы клиентов",
-      subtitle: "Что говорят люди, с которыми я работал?",
-      items: [
-        { name: "Азизбек Рахимов", role: "CEO, TechStart", text: "Работать с Санжарбеком было очень легко. Он быстро понял наши требования и создал отличное веб-приложение." },
-        { name: "Малика Каримова", role: "Маркетинг Менеджер", text: "Сочетание дизайна и функциональности великолепно. Уровень конверсии нашего сайта значительно вырос." },
-        { name: "Сардор Алиев", role: "Основатель стартапа", text: "Мастер своего дела. Он может найти простые и эффективные решения сложных проблем. Рекомендую!" }
-      ]
-    },
     footer: {
       rights: "Все права защищены."
     }
@@ -294,13 +277,6 @@ export const translations = {
       step2: { title: "Design & Prototype", desc: "Creating UI/UX design, preparing interactive prototypes." },
       step3: { title: "Development", desc: "Coding frontend and backend parts based on approved design, connecting the database." },
       step4: { title: "Testing & Launch", desc: "Checking all functions, fixing bugs, and presenting the project to the public." }
-    },
-    testimonials: {
-      title: "Testimonials",
-      subtitle: "What people I've worked with say?",
-      items: [
-       { name: "Mijoz", role: "Mebel Do`koni", text: "Sanjarbek bizning saytimizni ajoyib va sifatli tarzda ishlab chiqdi" }
-      ]
     },
     footer: {
       rights: "All rights reserved."

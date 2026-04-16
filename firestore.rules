@@ -1,0 +1,75 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' || 
+         request.auth.token.email == "sanjarbektest111@gmail.com");
+    }
+
+    // Publicly readable collections
+    match /settings/{document=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /projects/{document=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /skills/{document=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /certificates/{document=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /experience/{document=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /education/{document=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /services/{document=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Publicly writable but private/admin readable
+    match /messages/{messageId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Analytics and Stats (Publicly writable)
+    match /analytics/{date} {
+      allow get, create, update: if true;
+      allow list: if isAdmin();
+    }
+    
+    match /stats/reactions {
+      allow read: if true;
+      allow create, update: if true;
+    }
+
+    // User profiles
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      allow create: if isAuthenticated() && (request.auth.uid == userId);
+      allow update: if isAdmin();
+    }
+  }
+}
